@@ -639,10 +639,33 @@ const NAME_REST={
  2026:{M:['서준','은우','지호','선우','유준','수호','이안','우진','도하','건우'],F:['하윤','서아','하린','지유','채아','수아','시아','유나','윤슬','리아']}
 };
 const NAMEKEY=y=>y>=2020?2026:clamp(Math.floor(y/10)*10,1960,2010);
-function pickGiven(key,sex){
-  const T=NAME_TOP[key],rest=NAME_REST[key][sex].filter(n=>!T[sex].some(t=>t[0]===n));
-  const restW=T.counts?900:3;
-  return wpick(T[sex].concat(rest.map(n=>[n,restW])));
+// 실제로는 1위 이름도 그해 아이의 1~2%뿐: 상위 이름은 그 비율만큼만, 나머지는 그 시대에 흔했던 이름(게임 설정)과 앞뒤 시대 이름에서 고루
+const NAME_POOL={
+ 1960:{M:'영수 성호 영호 영철 상철 정수 용수 종수 병철 재영 광수 영식 동수 경수 상호 영길 정호 진호 성수 명수 기수 재호 승호 종호 영남 춘식 만수 덕수 상훈 정식 재철 용호 광호 성철 기철 재근 상근 종철 석호 동호 영진 현수 영환 정길 남수',
+       F:'미숙 미경 영숙 순자 영자 경숙 정숙 명숙 혜숙 정희 경희 은숙 영희 미자 순희 옥순 말순 정순 명희 영순 경자 춘자 숙자 영옥 혜경 미영 경애 정애 영애 인숙 선희 금순 복순 정란 미란 연희 은희 숙희 경순 옥자 현숙 화자'},
+ 1970:{M:'정훈 성호 성훈 상훈 성진 준호 재훈 영진 지훈 성민 동현 현철 민수 상욱 진호 정호 성우 재호 경호 종훈 성수 태호 승호 현수 영훈 재성 정민 상현 기훈 형준 병철 대현 진수 준영 철민 태훈 성욱 용준 재원 진혁',
+       F:'은주 은정 미경 미영 은영 현정 지영 현주 정은 미정 수진 선영 혜진 은희 정미 지현 은미 경미 혜영 미선 미진 현숙 소영 주희 윤정 선희 정아 혜정 은경 연희 경아 희정 수경 지은 미나 윤희 정희 현아 수정 지혜'},
+ 1980:{M:'지훈 정민 성민 현우 정훈 동현 준호 민수 성훈 상현 재현 진우 승현 준영 민호 재민 대현 상민 영준 현석 우진 재우 동욱 지원 형준 진혁 정우 준혁 성현 태현 재훈 민석 동훈 원석 종현 경민 현준 승민 준석 민규',
+       F:'지혜 지영 혜진 은지 수진 미영 민정 지은 은영 유진 선영 소연 지현 민지 수연 혜원 은정 정은 보람 아름 슬기 지선 혜정 미진 수정 은혜 소영 지연 은희 혜림 다영 윤정 효진 세영 나영 수현 미란 현정 은미 선미'},
+ 1990:{M:'지훈 동현 현우 민수 성민 준호 민재 승현 지원 현준 성현 도현 우진 민석 상현 준영 재현 진우 민호 태현 승민 동욱 준혁 영훈 건우 지호 승훈 성진 정우 재원 민규 현수 동민 대현 준수 우현 형석 재민 상우 태훈',
+       F:'유진 민지 지은 지혜 수진 은지 지현 혜진 지수 수빈 예진 소영 서영 지원 민정 은비 다은 수연 혜원 유정 지민 보람 슬기 하나 다혜 예지 소연 세영 혜린 한나 가영 나연 윤지 은영 주연 연주 현지 수정 미진 아름'},
+ 2000:{M:'민준 현우 지훈 서준 예준 주원 도현 건우 승민 지호 준서 민재 우진 동현 성민 준혁 승현 현준 민성 지원 재원 시우 준영 태민 진우 민혁 우현 상현 성현 승우 재민 동건 정민 윤호 지환 준수 영민 태현 민규 하준',
+       F:'유진 서연 수빈 서윤 서현 민서 지원 예은 지민 채원 하은 윤서 지윤 수민 지수 예진 수연 은비 다은 가은 지은 소윤 민지 혜원 예린 수현 하늘 다현 지현 채은 서영 유나 나연 예원 은서 지혜 수아 소연 연우 혜인'},
+ 2010:{M:'민준 서준 예준 도윤 시우 주원 하준 지호 지후 준우 건우 현우 유준 도현 우진 선우 서진 연우 준서 은우 정우 승우 지훈 민재 현준 윤우 시윤 이준 승민 지환 지우 준혁 한결 태윤 민성 지성 동하 승현 지안 율',
+       F:'서연 서윤 서현 지우 하은 민서 하윤 지유 윤서 채원 수아 지민 지아 서영 예은 지윤 다은 은서 예린 수빈 소율 예원 유나 시은 지원 하린 채은 가은 윤아 수민 서진 연우 민지 다인 예서 소윤 아린 서아 지안 유진'},
+ 2026:{M:'도윤 이준 시우 하준 태오 서준 은우 지호 선우 유준 수호 이안 우진 도하 건우 로운 하율 시윤 지안 은호 이현 도율 유찬 주원 선율 이든 태이 하람 시안 윤우 은찬 로하 지율 서우 정우 하온 시온 연우 다온 우주',
+       F:'서윤 서아 아린 이서 지안 하윤 하린 지유 채아 수아 시아 유나 윤슬 리아 이솔 로아 하은 아윤 지아 서하 다인 연우 이나 세아 하율 은서 소이 채이 서이 예나 나은 시은 유주 다온 이음 로하 아라 지우 라엘 하엘'}};
+for(const k in NAME_POOL)for(const sx of ['M','F'])NAME_POOL[k][sx]=[...new Set(NAME_POOL[k][sx].split(' ').concat(NAME_REST[k][sx]))];
+const POOL_KEYS=Object.keys(NAME_POOL).map(Number);
+function pickGiven(key,sex,ex){
+  const T=NAME_TOP[key],top=T[sex],topN=new Set(top.map(t=>t[0]));
+  const ki=POOL_KEYS.indexOf(+key),at=d=>POOL_KEYS[ki+d]?NAME_POOL[POOL_KEYS[ki+d]][sex]:[];
+  const own=NAME_POOL[key][sex].filter(n=>!topN.has(n)),seen=new Set([...topN,...own]);
+  const near=[...new Set([...at(-1),...at(1)])].filter(n=>!seen.has(n));near.forEach(n=>seen.add(n));
+  const far=[...new Set([...at(-2),...at(2)])].filter(n=>!seen.has(n));
+  const pTop=T.counts?.067:.045; // 2025년 상위 5개 이름 합계 = 남아 약 6.9%·여아 약 6.5% (출생신고 기준)
+  for(let k=0;k<12;k++){const u=R();const edge=ki===0||ki===POOL_KEYS.length-1;const L=edge?(u<.68?own:near):(u<.5?own:u<.82?near:far);const n=u<pTop?wpick(top):L[ri(0,L.length-1)];if(!ex||!ex.includes(n))return n;}
+  return own[ri(0,own.length-1)];
 }
 function nameRank(key,sex,given){
   const T=NAME_TOP[key];const i=T[sex].findIndex(t=>t[0]===given);if(i<0)return null;
@@ -1769,7 +1792,7 @@ class Person{
       if(i>0&&i<n&&R()<.15)continue; // 계획했지만 갖지 못한 아이
       const ba=a,ma=wAge+(ba-this.age),extra=i>=n;if(ma>45)break;
       this.at(ba,()=>{if(!this.married)return;const kx=R()<this.E.male?'M':'F';const ky=this.by+ba;
-        const nk=NAMEKEY(ky);const g=pickGiven(nk,kx);const nr=nameRank(nk,kx,g);
+        const nk=NAMEKEY(ky);const g=pickGiven(nk,kx,[this.given,...this.kids,(this.spouse&&this.spouse.name||'').slice(1)]);const nr=nameRank(nk,kx,g);
         this.kids.push(g);(this.kidAges=this.kidAges||[]).push(this.age);
         {const kb=this.age;
          this.at(kb+1,()=>this.log(`${J(g,'이','가')} 처음으로 '${this.sex==='M'?'아빠':'엄마'}'라고 불렀습니다.`,'good'));

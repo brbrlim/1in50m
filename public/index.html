@@ -950,13 +950,13 @@ const EVT=[
  {id:'longhair',a:[17,29],p:.2,c:(p,y)=>p.sex==='M'&&y>=1973&&y<=1979,t:'장발 단속에 걸려 파출소에서 머리를 깎였습니다.',tone:'bad'},
  {id:'miniskirt',a:[17,29],p:.12,c:(p,y)=>p.sex==='F'&&y>=1973&&y<=1979,t:'미니스커트 길이를 재는 단속반을 피해 골목으로 돌아갔습니다.'},
  {id:'parttime',a:[17,24],p:.15,c:(p,y)=>y>=1990&&!p.afterDone&&(!p.momDead||!p.dadDead),t:'첫 아르바이트로 번 돈으로 부모님 내복을 사 드렸습니다.'},
- {id:'mt',a:[19,22],p:.5,c:p=>p.student,t:'대학 동기들과 MT를 가서 밤새 이야기를 나눴습니다.'},
- {id:'club',a:[19,23],p:.3,c:p=>p.student,t:'동아리에 들어가 평생 친구들을 만났습니다.'},
- {id:'protest',a:[19,25],p:.3,c:(p,y)=>p.student&&y>=1980&&y<=1987,t:'최루탄 냄새 속에서 시위 행렬에 섰습니다.'},
- {id:'backpack',a:[20,26],p:.15,c:(p,y)=>p.student&&y>=1992,t:p=>{p.used.trip=1;return '배낭 하나 메고 유럽 배낭여행을 떠났습니다.';},scene:'trip',cap:'유럽 배낭여행'},
- {id:'langstudy',a:[20,26],p:.15,c:(p,y)=>p.student&&y>=1995&&p.q>=4,t:p=>{p.used.trip=1;return '어학연수를 다녀왔습니다.';},scene:'trip',cap:'어학연수'},
- {id:'leave',a:[20,25],p:.06,c:p=>p.student,t:'1년 휴학하고 아르바이트를 했습니다.'},
- {id:'scholar',a:[19,25],p:.08,c:p=>p.student,t:'성적 장학금을 받았습니다.',tone:'good'},
+ {id:'mt',a:[19,22],p:.5,c:p=>p.student&&!p.army,t:'대학 동기들과 MT를 가서 밤새 이야기를 나눴습니다.'},
+ {id:'club',a:[19,23],p:.3,c:p=>p.student&&!p.army,t:'동아리에 들어가 평생 친구들을 만났습니다.'},
+ {id:'protest',a:[19,25],p:.3,c:(p,y)=>p.student&&!p.army&&y>=1980&&y<=1987,t:'최루탄 냄새 속에서 시위 행렬에 섰습니다.'},
+ {id:'backpack',a:[20,26],p:.15,c:(p,y)=>p.student&&!p.army&&y>=1992,t:p=>{p.used.trip=1;return '배낭 하나 메고 유럽 배낭여행을 떠났습니다.';},scene:'trip',cap:'유럽 배낭여행'},
+ {id:'langstudy',a:[20,26],p:.15,c:(p,y)=>p.student&&!p.army&&y>=1995&&p.q>=4,t:p=>{p.used.trip=1;return '어학연수를 다녀왔습니다.';},scene:'trip',cap:'어학연수'},
+ {id:'leave',a:[20,25],p:.06,c:p=>p.student&&!p.army,t:'1년 휴학하고 아르바이트를 했습니다.'},
+ {id:'scholar',a:[19,25],p:.08,c:p=>p.student&&!p.army,t:'성적 장학금을 받았습니다.',tone:'good'},
  {id:'letter',a:[19,24],p:.7,c:p=>p.army,t:'훈련소에서 부모님께 첫 편지를 썼습니다.'},
  {id:'vacation',a:[19,25],p:.6,c:p=>p.army,t:'첫 휴가를 나와 어머니가 차려 준 밥을 먹었습니다.'},
  {id:'armyphone',a:[19,25],p:.9,c:(p,y)=>p.army&&y>=2020,t:'일과가 끝나면 휴대전화로 친구들과 연락합니다.'},
@@ -1288,7 +1288,10 @@ class Person{
     const E=this.E;
     this.at(aa,()=>{
       const r=wpick([['active',86],['social',10],['exempt',4]]);
-      if(r==='active'){this.army=true;const uy=this.year();this.log(`입대했습니다. 현역 ${E.army}개월, ${J(uy<1990?'국방색 군복':uy<2011?'얼룩무늬 전투복':'디지털 무늬 전투복','을','를')} 받았습니다.`,'',`입대 무렵 육군 복무 기간 ${E.army}개월`,E.y>=1990?'army':'game');this.scene('army',`입대 · 현역 ${E.army}개월`);this.at(aa+Math.ceil(E.army/12),()=>{this.army=false;this.log('전역했습니다.','good');});}
+      if(r==='active'){this.army=true;const uy=this.year();this.log(`입대했습니다. 현역 ${E.army}개월, ${J(uy<1990?'국방색 군복':uy<2011?'얼룩무늬 전투복':'디지털 무늬 전투복','을','를')} 받았습니다.`,'',`입대 무렵 육군 복무 기간 ${E.army}개월`,E.y>=1990?'army':'game');this.scene('army',`입대 · 현역 ${E.army}개월`);{const base=wpick([[['강원',wpick([['철원군',3],['화천군',2],['양구군',2],['인제군',2],['고성군',1]])],45],[['경기',wpick([['연천군',2],['포천시',2],['파주시',2],['양주시',1],['동두천시',1]])],30],[['경북','포항시'],5],[['충남','논산시'],5],[['경남','창원시'],5],[['전남','목포시'],5],[['충북','증평군'],5]]);
+        const pre=[this.region,this.district],lh=this.leftHome;
+        if(this.region!=='해외'){this.moveTo(base[0],base[1],'훈련소를 마치고 {to}의 부대로 자대 배치를 받았습니다.');this.tally.move--;this.logs[this.logs.length-1].stat='육군 부대 상당수가 강원·경기 북부 전방에 있음 · 배치 지역은 게임 설정';this.logs[this.logs.length-1].src='game';}
+        this.at(aa+Math.ceil(E.army/12),()=>{this.army=false;if(this.region===base[0]&&this.district===base[1]){this.moveTo(pre[0],pre[1],'전역하고 {to}로 돌아왔습니다.');this.tally.move--;this.leftHome=lh;}else this.log('전역했습니다.','good');});}}
       else if(r==='social')this.log(E.y<1995?'방위병으로 복무를 시작했습니다.':'사회복무요원으로 복무를 시작했습니다.','','병역판정검사 결과 보충역');
       else this.log('병역 면제 판정을 받았습니다.');
     });
@@ -2561,12 +2564,12 @@ function renderWallet(p){
   const indep=p.afterDone||p.married;
   const own=p.alive?p.ownPay():0,sp=p.alive?p.spPay():0;
   const nw=p.netWorth(),debt=p.debt+p.mort;
-  const housing=!indep&&p.alive?'부모님 집':p.housing==='shelter'?'쉼터·쪽방':p.home?'자가':p.housing==='own'?'자가':p.used&&p.used.jeonse?'전세':'월세';
+  const housing=!indep&&p.alive?(p.army?'군 생활관':p.leftHome?'하숙·자취':'부모님 집'):p.housing==='shelter'?'쉼터·쪽방':p.home?'자가':p.housing==='own'?'자가':p.used&&p.used.jeonse?'전세':'월세';
   const kids=p.kids.length;
   const tiles=[
     ['inc','월 소득',indep?money(own+sp):'—',indep?(own>0&&p.payZ!=null&&!(p.retired&&!p.working)?`본인 ${topTxt(1-(p.payPct()))}`:own>0?'연금':sp>0?'배우자 소득':'소득 없음'):`부모 소득 ${QLAB[p.q]}`],
     ['cash','현금·금융자산',indep?money(p.cash):'—',indep?'예금·투자':'아직 부모님 품'],
-    ['home','집',housing,p.home?`시세 ${money(p.homeVal)}`:p.used&&p.used.jeonse&&indep?'보증금은 금융자산에 포함':''],
+    ['home','집',housing,!indep&&p.leftHome&&!p.army?'생활비는 부모님이 보내 줌':p.home?`시세 ${money(p.homeVal)}`:p.used&&p.used.jeonse&&indep?'보증금은 금융자산에 포함':''],
     ['debt','빚',indep?money(debt):'—',p.mort>0?`주택담보 ${money(p.mort)}`:p.debt>0?'신용·학자금 등':'없음'],
     ['nw','순자산',indep?money(nw):'—',indep?`가구 ${topTxt(1-(nwPct(nw)))}`:''],
     ['fam','가족',p.married?'기혼':p.divorced?'이혼':p.widowed?'사별':p.everMarried?'혼자':'미혼',kids?`자녀 ${kids}명${p.grand?' · 손주':''}`:'자녀 없음']
@@ -2590,7 +2593,7 @@ function snapHtml(p){
   const own=p.ownPay(),sp=p.spPay(),nw=p.netWorth();const kidsT=p.kids.map((k,i)=>`${k} ${p.age-p.kidAges[i]}세`).join(', ');
   const recent=p.logs.filter(e=>e.tone!=='hist'&&!/세\. 같은 해/.test(e.text)).slice(-5).reverse();
   return `<div class="snap">
-   <div><span>사는 곳</span>${p.region} ${p.district} · ${p.home?'자가 '+money(p.homeVal):p.housing==='parents'?'부모님 집':'전월세'}</div>
+   <div><span>사는 곳</span>${p.region} ${p.district} · ${p.home?'자가 '+money(p.homeVal):!(p.afterDone||p.married)?(p.army?'군 생활관':p.leftHome?'하숙·자취 (생활비는 부모님이)':'부모님 집'):p.housing==='shelter'?'쉼터·쪽방':'전월세'}</div>
    <div><span>하는 일</span>${p.status()}${p.payZ!=null&&own>0&&!(p.retired&&!p.working)?` · 월 ${money(own)} (${topTxt(1-(p.payPct()))})`:''}</div>
    ${!(p.afterDone||p.married)?`<div><span>집안 형편</span>${WEALTH_W[p.q]} 집 · 부모 소득 ${QLAB[p.q]}</div>`:`<div><span>돈</span>현금 ${money(p.cash)} · 빚 ${money(p.debt+p.mort)} · 순자산 ${money(nw)}${(p.afterDone||p.married)?` (가구 ${topTxt(1-(nwPct(nw)))})`:''}</div>`}
    <div><span>가족</span>${[p.momDead?'':`어머니 ${p.momAge+p.age}세`,p.dadDead?'':`아버지 ${p.dadAge+p.age}세`].filter(Boolean).join(' · ')}${p.order>1||p.hasYounger?' · 형제자매':''}${p.age>=18?' · ':''}${p.age<18?'':p.married&&p.spouse?`배우자 ${p.spouse.name} (${p.spouse.age0+(p.age-p.spouse.at)}세${p.spouse.job?' · '+p.spouse.job:''}${sp>0?' · 월 '+money(sp):''})`:p.divorced?'이혼':p.widowed?'사별':'미혼'}${kidsT?' · 자녀 '+kidsT:''}${p.grandCount?' · 손주 '+p.grandCount+'명':''}</div>
@@ -2722,7 +2725,7 @@ function stageDraw(ctx,p,f){
   R(rural?(dark?'#24412a':'#3f6b3a'):(dark?'#2b2f3d':'#4a5064'),0,26,120,8);R(rural?'#2f5a30':'#3a3f52',0,26,120,1);
   if(rural)for(let x=2;x<120;x+=5)R('#5f8f4a',x,29+(x%3),2,1);
   // 집
-  const housing=!(p.afterDone||p.married)?'parents':p.housing;
+  const housing=!(p.afterDone||p.married)?(p.leftHome?'rent':'parents'):p.housing;
   if(p.inCare){R('#d9d4cc',4,12,22,14);R('#c0392b',13,14,4,1);R('#c0392b',14,13,2,3);for(let wx=6;wx<24;wx+=4)R('#f2d27a',wx,19,2,2);}
   else if(housing==='shelter'){R('#7a6a55',8,21,12,5);R('#5a4a3a',10,19,8,2);}
   else if((p.home&&y>=1985&&!rural)||(housing==='parents'&&y>=1990&&metro)){R('#c9c4ba',5,7,16,19);for(let wy=9;wy<25;wy+=3)for(let wx=7;wx<20;wx+=3)R(((wx+wy+(f>>3))%4)?'#f2d27a':'#5a5f70',wx,wy,1,1);}

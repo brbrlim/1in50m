@@ -2924,6 +2924,7 @@ function showMedia(blob,kind,fname){
     <p class="fine">${kind==='video'?'저장이 안 되면 영상을 길게 누르거나 오른쪽 클릭해 저장하세요.':'휴대폰에서는 이미지를 길게 눌러 사진에 저장할 수 있어요.'} 1080×1920 (9:16) · 스토리·릴스 크기</p>
     <div class="row"><a class="btn" id="mSave" href="${url}" download="${fname}">파일로 저장</a>${navigator.canShare&&navigator.canShare({files:[new File([blob],fname,{type:blob.type})]})?'<button class="btn ghost" id="mShare">바로 공유</button>':''}</div></div>`;
   document.body.appendChild(ov);ov.querySelector('#mClose').addEventListener('click',()=>{ov.remove();URL.revokeObjectURL(url);});
+  {const sv=ov.querySelector('#mSave');sv.addEventListener('click',async e=>{if(!(window.claude&&window.claude.use))return;e.preventDefault();try{const dl=await window.claude.use('downloads');if(!dl){window.open(url,'_blank');return;}await dl.save({filename:fname,data:blob});sv.textContent='저장했어요';}catch(err){if(err&&err.code!=='declined')sv.textContent='저장할 수 없어요 · 길게 눌러 저장';}});}
   const sh=ov.querySelector('#mShare');if(sh)sh.addEventListener('click',()=>navigator.share({files:[new File([blob],fname,{type:blob.type})],title:'5천만분의 1',text:'내 인생은 이랬어요'}).catch(()=>{}));
 }
 function shareLink(dg){return SITE+'#r'+b64u.enc(JSON.stringify(dg));}

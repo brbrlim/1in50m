@@ -44,6 +44,10 @@ body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-siz
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
   padding-block:24px 120px;-webkit-font-smoothing:antialiased}
 .wrap{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+/* 넓은 화면에서는 전체를 비례 확대 (글자·도트·간격 모두 같은 비율) */
+@media (min-width:1024px){body{zoom:1.15}#choiceBox .choice{max-height:min(46vh,480px)}}
+@media (min-width:1400px){body{zoom:1.28}}
+@media (min-width:1800px){body{zoom:1.4}}
 h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.2}
 p{margin:0}
 button{font:inherit;color:inherit;cursor:pointer}

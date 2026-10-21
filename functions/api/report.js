@@ -37,5 +37,8 @@ export async function onRequestGet({request,env}){
     q(`SELECT tag,COUNT(*) n FROM feedback WHERE ${W} GROUP BY tag ORDER BY n DESC`,start,end),
     q(`SELECT age/10*10 band,COUNT(*) n,ROUND(AVG(json_extract(props,'$.sec')),0) sec FROM events WHERE ${W} AND name='game_end' GROUP BY band ORDER BY band`,start,end)
   ]);
-  return json({range:{start,end,days},users:users[0],byDay,funnel:funnel[0],byName,eras,devs,countries,dropOffAgeBand:lastAge,endAgeBand:endAges,choices,speeds,shares,feedbackTags:fbTags,feedback});
+  const F=funnel[0]||{};const steps=[['방문','s_view'],['시대 고름','s_era'],['태어남(시작)','s_start'],['10세','s_age10'],['20세','s_age20'],['40세','s_age40'],['60세','s_age60'],['끝까지','s_end'],['공유','s_share'],['다시 하기','s_replay']];
+  const funnelRows=steps.map(([step,k],i)=>({order:i+1,step,sessions:F[k]||0,ofStart:F.s_start?(F[k]||0)/F.s_start:null}));
+  const fbRows=feedback.map(f=>{let c=null;try{c=JSON.parse(f.ctx||'null');}catch(e){}return{id:f.id,day:f.day,tag:f.tag||'(없음)',text:f.text,era:f.era,age:f.age,year:f.year,scene:c&&c.logs?c.logs.slice(-2).join(' / '):'',dev:f.dev};});
+  return json({range:{start,end,days},funnelRows,fbRows,users:users[0],byDay,funnel:funnel[0],byName,eras,devs,countries,dropOffAgeBand:lastAge,endAgeBand:endAges,choices,speeds,shares,feedbackTags:fbTags,feedback});
 }

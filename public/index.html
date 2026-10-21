@@ -116,6 +116,12 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .sharebar{margin-top:-4px}
 .mediaov{position:fixed;inset:0;background:rgba(10,12,20,.72);z-index:60;display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 .mediabox{background:var(--card);color:var(--ink);border-radius:10px;padding:14px;max-width:420px;width:100%;max-height:100%;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.fbbtn{position:fixed;right:12px;bottom:calc(var(--ctrlH,0px) + 12px);z-index:40;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 13px;font:inherit;font-size:13px;box-shadow:0 2px 10px rgba(0,0,0,.12);cursor:pointer}
+body.deciding .fbbtn{opacity:.55}
+.fbtags{display:flex;flex-wrap:wrap;gap:6px}
+.fbtags button{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:5px 10px;font:inherit;font-size:12.5px;cursor:pointer}
+.fbtags button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.mediabox textarea{width:100%;min-height:110px;resize:vertical;font:inherit;font-size:14px;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink)}
 .mediabox img,.mediabox video{width:100%;max-height:62vh;object-fit:contain;border-radius:6px;background:#000}
 .sharedlife{background:var(--card);border:1px solid var(--accent);border-radius:8px;padding:12px 14px}
 .sharedlife .big1{font-family:var(--f-display);font-size:28px;margin:4px 0;color:var(--accent)}
@@ -445,7 +451,7 @@ tr.me td{font-weight:600}
       <button class="btn" id="startBtn">태어나기</button>
       <span class="fine">1년이 약 1초씩 흐르고, 중요한 순간마다 선택을 합니다.<br>같은 날 태어난 네 명의 삶도 함께 흘러갑니다.</span>
     </div>
-    <p class="fine">원작 <a href="https://1in8b.life" target="_blank" rel="noopener">80억분의 1</a>을 한국 통계로 옮겨 만든 팬메이드 게임입니다.</p>
+    <p class="fine">원작 <a href="https://1in8b.life" target="_blank" rel="noopener">80억분의 1</a>을 한국 통계로 옮겨 만든 팬메이드 게임입니다.<span id="privNote"> 게임을 고치는 데 쓰려고 익명 플레이 통계(고른 선택지, 몇 살까지 플레이했는지 등)를 모읍니다. 이름·연락처는 받지 않아요.</span></p>
   </section>
 
   <!-- REVEAL -->
@@ -2531,7 +2537,7 @@ function buildEras(){
   box.innerHTML=ERA_KEYS.map(k=>`<button class="era" data-k="${k}" aria-pressed="${k===eraKey}"><b>${k}</b><small>${ERAS[k].bLab}명</small></button>`).join('')+
     `<button class="era" data-k="rand" aria-pressed="false"><b>무작위</b><small>출생아 수 비례</small></button>`;
   box.querySelectorAll('.era').forEach(b=>b.addEventListener('click',()=>{
-    eraKey=b.dataset.k==='rand'?'rand':+b.dataset.k;
+    eraKey=b.dataset.k==='rand'?'rand':+b.dataset.k;TRK.ev('era_select',{k:b.dataset.k});
     box.querySelectorAll('.era').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));
     showEra();
   }));
@@ -2667,7 +2673,7 @@ function begin(){
   $('#endBox').hidden=true;$('#endBox').innerHTML='';$('#log').innerHTML='';$('#choiceBox').innerHTML='';$('#fxBox').innerHTML='';
   $('#status').classList.remove('dead');$('#pauseBtn').textContent='멈춤';lastW={};skipMode=false;$('#skipBtn2').setAttribute('aria-pressed','false');
   player.logs.unshift({age:0,text:`${J(player.name,'으로','로')} 태어났습니다. 그날 대한민국에서 함께 태어난 아기는 약 ${fmt(ERA.perDay)}명.`,tone:'mile',stat:`${ERA.y===2026?'2025':ERA.y}년 출생아 ${ERA.bLab}명 ÷ 365일`,src:ERA.srcB});
-  player.start();peers.forEach(q=>q.start());
+  player.start();peers.forEach(q=>q.start());TRK.ev('game_start',{sex:player.sex,rg:player.birthRegion,q:player.q});window.__gs=Date.now();window.__nc=0;
   player.fx.unshift({type:'scene',kind:'birth',caption:`${ERA.y}년, ${player.birthRegion}에서 태어나다`});
   peerSeen=peers.map(q=>q.logs.length);
   buildTimeline();render();window.scrollTo({top:0});loop();
@@ -2689,7 +2695,7 @@ async function loop(){
   timer=setTimeout(()=>{tick();loop();},skipMode?40:BASE/speed*(player&&player.age<6?.45:1));
 }
 function tick(){
-  const alive=player.step();
+  const alive=player.step();if(alive&&player.age%10===0&&player.age>0)TRK.ev('age');
   for(const p of peers){
     if(!p.alive)continue;
     if(p.age<player.age||(!alive&&p.age<=player.age))p.step();
@@ -2917,8 +2923,9 @@ function renderChoice(){
   document.body.classList.add('deciding');
   $('#choiceBox').innerHTML=`<section class="choice${panelMin?' min':''}" role="dialog" aria-label="${c.title}"><div class="chead"><p class="label">${player.year()}년 · ${player.age}세의 ${c.snapshot?'중요한 순간':c.pause?'잠시 멈춤':'선택'}</p><button class="seg" id="minBtn">${panelMin?'펼치기':'접고 둘러보기'}</button></div><h3>${c.title}</h3><div class="desc">${c.desc}</div>${extra}<div class="opts">${c.opts.map((o,i)=>`<button class="opt${autoMode&&i===bi?' best':''}" id="opt${i}" data-i="${i}"><b>${o.label}</b>${o.sub?`<small>${o.sub}</small>`:''}${o.eff?`<span class="eff">${o.eff}</span>`:''}</button>`).join('')}</div>${autoMode?`<div class="cdown"><b id="cdBar"></b></div><p class="fine">잠시 후 '${c.opts[bi].label}'(으)로 넘어가요. 다른 카드를 누르면 그걸 골라요.</p>`:''}</section>`;
   const pick=i=>{clearTimeout(choiceTimer);const o=c.opts[i];const th=$('#thought');if(th&&th.value.trim()){player.thoughts.push({age:player.age,t:th.value.trim()});player.log(`생각: "${th.value.trim()}"`,'choice-ev');}
+    window.__nc=(window.__nc||0)+1;if(!c.snapshot)TRK.ev(c.pause?'reflect':'choice',{t:normT(c.title),o:normT(o.label),i,n:c.opts.length,ms:Date.now()-(window.__cs||Date.now()),auto:autoMode&&i===bi&&!window.__clicked,th:th&&th.value.trim()?th.value.trim().length:0});window.__clicked=false;
     player.queue.shift();o.fn();$('#choiceBox').innerHTML='';document.body.classList.remove('deciding');render();loop();};
-  $('#choiceBox').querySelectorAll('.opt').forEach(b=>b.addEventListener('click',()=>pick(+b.dataset.i)));
+  window.__cs=Date.now();$('#choiceBox').querySelectorAll('.opt').forEach(b=>b.addEventListener('click',()=>{window.__clicked=true;pick(+b.dataset.i);}));
   $('#minBtn').addEventListener('click',()=>{panelMin=!panelMin;clearTimeout(choiceTimer);renderChoice();});
   const th=$('#thought');if(th)th.addEventListener('input',()=>{clearTimeout(choiceTimer);const cd=$('#cdBar');if(cd){cd.style.transition='none';cd.style.width='100%';}});
   if(autoMode&&!panelMin){const ms=c.pause?4500:c.snapshot?3500:2600;const cd=$('#cdBar');requestAnimationFrame(()=>{cd.style.transitionDuration=ms+'ms';cd.style.width='0%';});choiceTimer=setTimeout(()=>pick(bi),ms);}
@@ -3097,7 +3104,7 @@ function endGame(){
 function endGame2(){
   over=true;clearTimeout(timer);clearTimeout(choiceTimer);document.body.classList.remove('deciding');skipMode=false;player.fx=[];$('#fxBox').innerHTML='';
   let guard=0;while(peers.some(q=>q.alive)&&guard++<130){for(const q of peers)q.step();}
-  render();
+  render();TRK.ev('game_end',{age:player.deathAt,cause:player.cause,sec:Math.round((Date.now()-(window.__gs||Date.now()))/1000),nc:window.__nc||0,married:!!player.everMarried,kids:player.kids.length,edu:player.edu,job:player.mainJob});TRK.flush();
   $('#status').classList.add('dead');
   $('#controls').hidden=true;$('#choiceBox').innerHTML='';$('#minibar').hidden=true;
   const p=player,E=ERA;const f=p.factors();const prod=f.reduce((m,x)=>m*x[2],1);const N=1/prod;const same=POP*prod;
@@ -3171,9 +3178,9 @@ function endGame2(){
       <p>'게임 설정(근사)'으로 표시한 값은 출처를 찾지 못했거나 게임 진행을 위해 단순화한 수치입니다. 과거 시대의 지역별 출생 비중, 세대별 학력·결혼·자녀 분포, 집값과 생활비·상속·결혼 지원 규모, 직업별 소득 분포와 승진·실직 확률, 인기 순위 밖의 이름 목록과 그 가중치, 1960~80년대 복무 기간과 흡연율, 합격·실직 확률이 여기에 해당합니다. 원작처럼 사망 원인 연출에서 고의적 자해는 제외했습니다.</p>
     </details>
   </div>`;
-  $('#againBtn').addEventListener('click',()=>{makeLives(E.y);$('#game').hidden=true;$('#reveal').hidden=false;window.scrollTo({top:0});runReels(false);});
-  $('#eraBtn').addEventListener('click',()=>{$('#game').hidden=true;$('#intro').hidden=false;window.scrollTo({top:0});showEra();});
-  $('#copyBtn').addEventListener('click',()=>{
+  $('#againBtn').addEventListener('click',()=>{TRK.ev('replay',{same:true});makeLives(E.y);$('#game').hidden=true;$('#reveal').hidden=false;window.scrollTo({top:0});runReels(false);});
+  $('#eraBtn').addEventListener('click',()=>{TRK.ev('replay',{same:false});$('#game').hidden=true;$('#intro').hidden=false;window.scrollTo({top:0});showEra();});
+  $('#copyBtn').addEventListener('click',()=>{TRK.ev('share_text');
     const done=()=>{$('#copyBtn').textContent='복사됨';setTimeout(()=>{const b=$('#copyBtn');if(b)b.textContent='결과 복사';},1600);};
     const sel=()=>{const r=document.createRange();r.selectNodeContents($('#shareText'));const s=getSelection();s.removeAllRanges();s.addRange(r);$('#copyBtn').textContent='텍스트를 선택했습니다';};
     try{navigator.clipboard.writeText(share).then(done,sel);}catch(e){sel();}
@@ -3251,9 +3258,9 @@ function afterEnd(p,N){
   const row=document.createElement('div');row.className='row sharebar';
   row.innerHTML=`<button class="btn" id="imgBtn">이미지 저장 (9:16)</button><button class="btn ghost" id="reelBtn">릴스용 영상 만들기</button><button class="btn ghost" id="linkBtn">결과 링크 공유</button>`;
   const anchor=$('#shareText');anchor.parentNode.insertBefore(row,anchor.nextSibling);
-  $('#imgBtn').addEventListener('click',async()=>{const b=$('#imgBtn');b.textContent='만드는 중…';try{const blob=await makeCardBlob(p,N);showMedia(blob,'image',`5천만분의1_${p.name}.png`);}catch(e){alertBox('이미지를 만들지 못했습니다: '+e.message);}b.textContent='이미지 저장 (9:16)';});
-  $('#reelBtn').addEventListener('click',async()=>{const b=$('#reelBtn');try{const blob=await makeReel(p,N,k=>{b.textContent=`영상 만드는 중 ${Math.round(k*100)}%`;});showMedia(blob,'video',`5천만분의1_${p.name}.${blob.type.includes('mp4')?'mp4':'webm'}`);}catch(e){alertBox(e.message);}b.textContent='릴스용 영상 만들기';});
-  $('#linkBtn').addEventListener('click',()=>{const url=shareLink(dg);const text=`${p.name} · ${p.E.y}년생 · 향년 ${p.deathAt}세 · ${koBig(N)}명 중 1명꼴인 인생`;
+  $('#imgBtn').addEventListener('click',async()=>{TRK.ev('share_image');const b=$('#imgBtn');b.textContent='만드는 중…';try{const blob=await makeCardBlob(p,N);showMedia(blob,'image',`5천만분의1_${p.name}.png`);}catch(e){alertBox('이미지를 만들지 못했습니다: '+e.message);}b.textContent='이미지 저장 (9:16)';});
+  $('#reelBtn').addEventListener('click',async()=>{TRK.ev('share_reel');const b=$('#reelBtn');try{const blob=await makeReel(p,N,k=>{b.textContent=`영상 만드는 중 ${Math.round(k*100)}%`;});showMedia(blob,'video',`5천만분의1_${p.name}.${blob.type.includes('mp4')?'mp4':'webm'}`);}catch(e){alertBox(e.message);}b.textContent='릴스용 영상 만들기';});
+  $('#linkBtn').addEventListener('click',()=>{TRK.ev('share_link');const url=shareLink(dg);const text=`${p.name} · ${p.E.y}년생 · 향년 ${p.deathAt}세 · ${koBig(N)}명 중 1명꼴인 인생`;
     if(navigator.share)navigator.share({title:'5천만분의 1',text,url}).catch(()=>copyText(url,$('#linkBtn')));else copyText(url,$('#linkBtn'));});
 }
 function copyText(t,btn){const ok=()=>{const o=btn.textContent;btn.textContent='링크를 복사했어요';setTimeout(()=>btn.textContent=o,1800);};try{navigator.clipboard.writeText(t).then(ok,()=>alertBox(t));}catch(e){alertBox(t);}}
@@ -3286,22 +3293,60 @@ async function playFunnel(N){
   $('#verdict').classList.add('on');
 }
 
+/* ---------- 익명 이용 통계 · 피드백 (배포 사이트에서만) ---------- */
+const TRK=(()=>{
+  const on=/(^|\.)1in50m(-life)?\.pages\.dev$/.test(location.hostname)||location.hostname==='localhost';let uid,sid=Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+  try{uid=localStorage.getItem('1in50m.uid');if(!uid){uid='u'+Math.random().toString(36).slice(2,12);localStorage.setItem('1in50m.uid',uid);}}catch(e){uid='x'+sid;}
+  const q=[];let tm=null;const t0=Date.now();
+  const flush=()=>{if(!q.length)return;const ev=q.splice(0,60);if(!on)return;const body=JSON.stringify({uid,sid,ev});
+    try{if(navigator.sendBeacon&&navigator.sendBeacon('/api/e',new Blob([body],{type:'application/json'})))return;fetch('/api/e',{method:'POST',body,keepalive:true,headers:{'content-type':'application/json'}}).catch(()=>{});}catch(e){}};
+  const ev=(n,p)=>{try{q.push({n,t:Date.now(),era:typeof ERA!=='undefined'&&ERA?ERA.y:null,age:typeof player!=='undefined'&&player&&!$('#game').hidden?(player.alive?player.age:player.deathAt):null,p:p||null});clearTimeout(tm);if(q.length>=25)flush();else tm=setTimeout(flush,5000);}catch(e){}};
+  return{on,uid,sid,ev,flush,sec:()=>Math.round((Date.now()-t0)/1000)};
+})();
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){TRK.ev('hide',{over:typeof over!=='undefined'&&over,sec:TRK.sec()});TRK.flush();}});
+window.addEventListener('error',e=>{if(!window.__errN)window.__errN=0;if(window.__errN++<3)TRK.ev('js_error',{m:String(e.message).slice(0,160),l:e.lineno});});
+const normT=t=>String(t||'').replace(/[0-9][0-9,.]*/g,'N').slice(0,60);
+function openFeedback(){
+  const ov=document.createElement('div');ov.className='mediaov';const inGame=player&&!$('#game').hidden;
+  const tags=['어색한 문장','앞뒤가 안 맞아요','통계가 이상해요','버그','재미있어요','제안'];
+  ov.innerHTML=`<div class="mediabox" role="dialog" aria-label="의견 보내기"><b>의견 보내기</b><p class="fine">플레이하다 이상하거나 좋았던 점을 언제든 적어 주세요. 매일 모아서 고칩니다.</p>
+    <div class="fbtags">${tags.map(t=>`<button type="button" aria-pressed="false">${t}</button>`).join('')}</div>
+    <textarea id="fbText" maxlength="2000" placeholder="${inGame?`${player.year()}년 · ${player.age}세 장면에 대해 적어 주세요`:'무엇이든 적어 주세요'}"></textarea>
+    <p class="fine">${inGame?'지금 장면의 연도·나이와 최근 기록 몇 줄이 함께 전송돼요. ':''}이름·연락처 같은 개인 정보는 적지 말아 주세요.</p>
+    <div class="row"><button class="btn" id="fbSend">보내기</button><button class="btn ghost" id="fbClose">닫기</button></div></div>`;
+  document.body.appendChild(ov);const wasPaused=paused;if(inGame&&!over){paused=true;clearTimeout(timer);}
+  const close=()=>{ov.remove();if(inGame&&!over&&!wasPaused){paused=false;loop();}};
+  let tag='';ov.querySelectorAll('.fbtags button').forEach(b=>b.addEventListener('click',()=>{tag=b.getAttribute('aria-pressed')==='true'?'':b.textContent;ov.querySelectorAll('.fbtags button').forEach(x=>x.setAttribute('aria-pressed',String(x.textContent===tag)));}));
+  ov.querySelector('#fbClose').addEventListener('click',close);ov.addEventListener('click',e=>{if(e.target===ov)close();});
+  ov.querySelector('#fbSend').addEventListener('click',async()=>{const text=ov.querySelector('#fbText').value.trim();if(!text){ov.querySelector('#fbText').focus();return;}
+    const btn=ov.querySelector('#fbSend');btn.disabled=true;btn.textContent='보내는 중…';
+    const ctx=inGame?{status:player.status(),region:`${player.region} ${player.district}`,sex:player.sex,choice:player.queue[0]?player.queue[0].title:null,logs:player.logs.slice(-6).map(l=>`${player.E.y+l.age}년 ${l.age}세 | ${l.text}${l.stat?' 〔'+String(l.stat).slice(0,120)+'〕':''}`)}:{screen:$('#intro').hidden?'reveal':'intro'};
+    let ok=false;try{if(TRK.on){const r=await fetch('/api/feedback',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({uid:TRK.uid,sid:TRK.sid,tag,text,era:ERA.y,age:inGame?player.age:null,year:inGame?player.year():null,ctx})});ok=r.ok;}}catch(e){}
+    TRK.ev('feedback',{tag,len:text.length});
+    ov.querySelector('.mediabox').innerHTML=ok?'<b>고맙습니다</b><p class="fine">보내 주신 의견은 매일 모아 살펴보고 고칩니다.</p><div class="row"><button class="btn" id="fbOk">계속하기</button></div>':`<b>지금은 보내지 못했어요</b><p class="fine">${TRK.on?'잠시 뒤 다시 시도해 주세요.':'의견 보내기는 1in50m.pages.dev 에서 할 수 있어요.'}</p><div class="row"><button class="btn" id="fbOk">닫기</button></div>`;
+    ov.querySelector('#fbOk').addEventListener('click',close);});
+  setTimeout(()=>ov.querySelector('#fbText').focus(),50);
+}
+{const b=document.createElement('button');b.className='fbbtn';b.type='button';b.textContent='의견 보내기';b.addEventListener('click',()=>{TRK.ev('feedback_open');openFeedback();});if(TRK.on)document.body.appendChild(b);}
+if(!TRK.on){const pn=$('#privNote');if(pn)pn.remove();}
+TRK.ev('page_view',{ref:(document.referrer&&!document.referrer.includes(location.host))?new URL(document.referrer).hostname:'',shared:location.hash.startsWith('#r'),w:innerWidth});
+
 /* ---------- wiring ---------- */
 const setCtrlH=()=>{const c=$('#controls');if(c&&!c.hidden)document.documentElement.style.setProperty('--ctrlH',c.offsetHeight+'px');};
 window.addEventListener('resize',setCtrlH);setInterval(setCtrlH,1000);
-$('#skipBtn2').addEventListener('click',()=>{skipMode=!skipMode;$('#skipBtn2').setAttribute('aria-pressed',String(skipMode));if(!paused)loop();});
-$('#autoBtn').addEventListener('click',()=>{autoMode=!autoMode;$('#autoBtn').setAttribute('aria-pressed',String(autoMode));if(player&&player.queue.length&&$('#choiceBox').innerHTML)renderChoice();});
+$('#skipBtn2').addEventListener('click',()=>{skipMode=!skipMode;TRK.ev('skip_mode',{on:skipMode});$('#skipBtn2').setAttribute('aria-pressed',String(skipMode));if(!paused)loop();});
+$('#autoBtn').addEventListener('click',()=>{autoMode=!autoMode;TRK.ev('auto_mode',{on:autoMode});$('#autoBtn').setAttribute('aria-pressed',String(autoMode));if(player&&player.queue.length&&$('#choiceBox').innerHTML)renderChoice();});
 if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>{for(const e of es){$('#minibar').hidden=e.isIntersecting||$('#game').hidden||over;}});window.addEventListener('load',()=>io.observe($('#wallet')));io.observe($('#wallet'));}
 setInterval(()=>{if(!player||over||$('#game').hidden||!player.alive||RM.matches)return;const cv=$('#portrait');drawPortrait(cv,lookOf(player,{blink:true}),60);setTimeout(()=>{if(player.alive)drawPortrait(cv,lookOf(player),60);},150);},3200);
 buildEras();showEra();
 let rsz=0;window.addEventListener('resize',()=>{clearTimeout(rsz);rsz=setTimeout(()=>{if(!$('#intro').hidden)showEra();},200);});
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(!$('#intro').hidden)showEra();});
-$('#startBtn').addEventListener('click',startFlow);
+$('#startBtn').addEventListener('click',()=>{TRK.ev('reveal_start',{k:String(eraKey)});startFlow();});
 $('#liveBtn').addEventListener('click',begin);
 $('#skipBtn').addEventListener('click',()=>{revealSkip&&revealSkip();});
 $('#pauseBtn').addEventListener('click',()=>{paused=!paused;$('#pauseBtn').textContent=paused?'계속':'멈춤';if(!paused)loop();});
 document.querySelectorAll('.seg[data-s]').forEach(b=>b.addEventListener('click',()=>{
-  speed=+b.dataset.s;document.querySelectorAll('.seg[data-s]').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));if(!paused)loop();
+  speed=+b.dataset.s;TRK.ev('speed',{v:speed});document.querySelectorAll('.seg[data-s]').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));if(!paused)loop();
 }));
 </script>
 

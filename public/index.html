@@ -606,13 +606,13 @@ const ERAS={
    hint:'과외가 금지된 국민학교를 다니고, 대학 시절 외환위기 뒤의 취업난을 지켜봅니다.'},
  1990:{y:1990,births:649738,bLab:'64만 9,738',tfr:'1.57',e0:{M:67.3,F:75.5},srcB:'births8090',srcT:'pop60s',srcE:'pop60s',male:.538,regions:REG90,u5:.009,acc:.004,shift:{M:-.5,F:-.3},mom:27.6,
    order:[[1,47],[2,40],[3,13]],edu:[['med',1.0],['top',2.8],['seoul',14],['univ',41],['college',22],['none',18],['middle',1]],sexEdu:0,
-   marry:{M:[33.2,.7],F:[30.9,.78]},choiceAge:27,gap:[65,16.5,18.5],kids:[[0,20],[1,37],[2,36],[3,7]],div:.2,foreign:.08,
+   marry:{M:[33.2,.7],F:[30.9,.78]},choiceAge:27,gap:[65,16.5,18.5],kids:[[0,15],[1,36],[2,41],[3,8]],div:.2,foreign:.08,
    army:21,smoke:{M:.45,F:.06},brk:.2,regular:.55,bigMul:.9,pubMul:.85,capMul:1,migrate:0,homeBump:0,tutor:.75,
    cls:'한 반 35명 안팎',meet:[['소개팅',3],['직장',3],['친구 모임',2],['소개 앱',1],['동호회',1]],
    hint:'출생성비 116.5. 여아 100명당 남아 116.5명이 태어난 해입니다.'},
  2026:{y:2026,births:254300,bLab:'25만 4,300',tfr:'0.80',e0:{M:80.8,F:86.6},srcB:'birth25',srcT:'birth25',srcE:'life24',male:.512,regions:REG_NOW,u5:0,acc:0,shift:{M:0,F:0},mom:33.8,
    order:[[1,62.4],[2,31.2],[3,6.4]],edu:[['med',.9],['top',2.5],['seoul',14.5],['univ',40],['college',17],['none',25]],sexEdu:0,
-   marry:{M:[33.9,.62],F:[31.6,.70]},choiceAge:27,gap:[63,16.7,20.2],kids:[[0,22],[1,38],[2,33],[3,7]],div:.22,foreign:.086,
+   marry:{M:[33.9,.62],F:[31.6,.70]},choiceAge:27,gap:[63,16.7,20.2],kids:[[0,16],[1,38],[2,38],[3,8]],div:.22,foreign:.086,
    army:18,smoke:{M:.31,F:.04},brk:.12,regular:.55,bigMul:1,pubMul:1,capMul:1,migrate:0,homeBump:0,tutor:1,
    cls:'한 반 20명 안팎',meet:[['소개팅',3],['직장',3],['친구 모임',2],['소개 앱',2],['동호회',1]],
    hint:'지금 태어나는 아이. 삶의 거의 전부가 아직 오지 않은 미래입니다.'}
@@ -836,6 +836,18 @@ const sggShare=(rg,d,al=1)=>{const L=SGG[rg];if(!L)return 1;let t=0,v=0;for(cons
 const pickDist=(rg,al=1)=>{if(rg==='해외')return EMIG[ri(0,EMIG.length-1)];const L=SGG[rg];if(!L)return '시내';return wpick(L.map(x=>[x[0],Math.pow(x[1],al)]));};
 // 행정구역 통합 이전 이름 (출생 당시 기준)
 const OLDNAME={세종:{세종시:[2012,()=>'연기군']},경남:{창원시:[2010,()=>['창원시','마산시','진해시'][ri(0,2)]]},충북:{청주시:[2014,()=>R()<.75?'청주시':'청원군']},충남:{계룡시:[2003,()=>'논산군']},대구:{군위군:[2023,()=>'군위군']}};
+// 그 시절 행정구역 이름 (지금 이름 → [생긴 해, 그 전 이름])
+const OLD_D={서울:{강남구:[1975,'성동구'],관악구:[1973,'영등포구'],도봉구:[1973,'성북구'],강서구:[1977,'영등포구'],강동구:[1979,'성동구'],은평구:[1979,'서대문구'],구로구:[1980,'영등포구'],동작구:[1980,'관악구'],송파구:[1988,'강동구'],양천구:[1988,'강서구'],서초구:[1988,'강남구'],노원구:[1988,'도봉구'],중랑구:[1988,'동대문구'],강북구:[1995,'도봉구'],광진구:[1995,'성동구'],금천구:[1995,'구로구']},
+ 부산:{북구:[1978,'부산진구'],해운대구:[1980,'동래구'],사하구:[1983,'서구'],금정구:[1988,'동래구'],강서구:[1989,'북구'],연제구:[1995,'동래구'],수영구:[1995,'남구'],사상구:[1995,'북구']},
+ 대구:{수성구:[1980,'동구'],달서구:[1988,'서구']},
+ 인천:{남동구:[1988,'남구'],서구:[1988,'북구'],계양구:[1995,'북구'],부평구:[1995,'북구'],연수구:[1995,'남구'],미추홀구:[2018,'남구']},
+ 광주:{광산구:[1988,'광산군']},대전:{유성구:[1989,'대덕군'],대덕구:[1989,'대덕군']},울산:{북구:[1997,'중구']},
+ 경기:{의정부시:[1963,'양주군'],성남시:[1973,'광주군'],부천시:[1973,'부천군'],광명시:[1981,'시흥군'],동두천시:[1981,'양주군'],과천시:[1986,'시흥군'],안산시:[1986,'시흥군'],구리시:[1986,'양주군'],평택시:[1986,'평택군'],군포시:[1989,'시흥군'],의왕시:[1989,'시흥군'],시흥시:[1989,'시흥군'],하남시:[1989,'광주군'],오산시:[1989,'화성군'],고양시:[1992,'고양군'],남양주시:[1995,'남양주군'],용인시:[1996,'용인군'],파주시:[1996,'파주군'],이천시:[1996,'이천군'],김포시:[1998,'김포군'],안성시:[1998,'안성군'],화성시:[2001,'화성군'],광주시:[2001,'광주군'],양주시:[2003,'양주군'],포천시:[2003,'포천군']},
+ 경북:{구미시:[1978,'선산군']}};
+// 금액 뒤에 '원'을 붙임 (3,700만을 → 3,700만 원을)
+const wonText=t=>typeof t!=='string'?t:t.replace(/(\d[\d,.]*(?:만|억))(?=을|를|이 |이었|이나|가 |으로|로 |의 |에 |만큼|까지|짜리|씩|과 |와 |도 |은 |는 |\(|[,.·)]| (?:늘|줄|벌|잃|모|남|들|넣|보태|빌|갚|썼|받|더|손해|이득|올|내))/g,'$1 원');
+const dn=(rg,d,y)=>{const o=(OLD_D[rg]||{})[d];return o&&y<o[0]?o[1]:d;};
+const oldText=(t,y)=>{if(y>=2018||typeof t!=='string')return t;for(const rg in OLD_D)for(const d in OLD_D[rg]){const o=OLD_D[rg][d];if(y<o[0]&&t.includes(rg+' '+d)){const A=rg+' '+d,B=rg+' '+o[1],bt=batchim(o[1]);for(const[x,y1,y2]of [['로','으로','로'],['으로','으로','로'],['가','이','가'],['이','이','가'],['를','을','를'],['을','을','를'],['와','과','와'],['과','과','와'],['는','은','는'],['은','은','는']])t=t.split(A+x).join(B+(bt?y1:y2));t=t.split(A).join(B);}}return t;};
 const histName=(rg,d,y)=>{const o=(OLDNAME[rg]||{})[d];return o&&y<o[0]?o[1]():d;};
 const CAP_XY={서울:{종로구:[126.98,37.59],중구:[126.99,37.56],용산구:[126.97,37.53],성동구:[127.04,37.56],광진구:[127.08,37.54],동대문구:[127.04,37.58],중랑구:[127.09,37.6],성북구:[127.02,37.59],강북구:[127.03,37.64],도봉구:[127.05,37.67],노원구:[127.06,37.65],은평구:[126.93,37.6],서대문구:[126.94,37.58],마포구:[126.9,37.56],양천구:[126.86,37.52],강서구:[126.85,37.55],구로구:[126.89,37.5],금천구:[126.9,37.46],영등포구:[126.9,37.53],동작구:[126.94,37.51],관악구:[126.95,37.48],서초구:[127.03,37.48],강남구:[127.05,37.5],송파구:[127.11,37.51],강동구:[127.14,37.53]},
  경기:{수원시:[127.01,37.26],용인시:[127.12,37.28],고양시:[126.83,37.66],화성시:[126.97,37.2],성남시:[127.13,37.42],부천시:[126.78,37.5],남양주시:[127.22,37.64],안산시:[126.83,37.32],평택시:[127.11,36.99],안양시:[126.93,37.39],시흥시:[126.8,37.38],파주시:[126.78,37.76],김포시:[126.72,37.62],의정부시:[127.05,37.74],광주시:[127.26,37.43],하남시:[127.21,37.54],양주시:[127.05,37.79],광명시:[126.86,37.48],군포시:[126.94,37.36],오산시:[127.08,37.15],이천시:[127.44,37.27],안성시:[127.28,37.01],구리시:[127.13,37.6],의왕시:[126.97,37.34],포천시:[127.2,37.89],양평군:[127.49,37.49],여주시:[127.64,37.3],동두천시:[127.06,37.9],과천시:[126.99,37.43],가평군:[127.51,37.83],연천군:[127.07,38.1]},
@@ -898,7 +910,8 @@ const jobLab=(o,k)=>o.title&&o[k]===o.titleJob?o.title:JOB[o[k]][0];
 // 고금리 대출 금리: 이자제한법 폐지(1998)·대부업법(2002) 뒤 최고금리 66%→49%→39%→34.9%→27.9%→24%→20%(2021)
 const hiRate=y=>y<1999?{r:.36,lab:'사채 · 월 3% 안팎의 고리'}:y<2002?{r:.45,lab:'법정 상한이 없던 시기 · 연 수십 %'}:y<2008?{r:.4,lab:'대부업 최고금리 연 66%→49%'}:y<2014?{r:.3,lab:`대부업 최고금리 연 ${y<2011?44:39}%`}:y<2018?{r:.24,lab:`법정 최고금리 연 ${y<2016?34.9:27.9}%`}:y<2021?{r:.2,lab:'법정 최고금리 연 24%'}:{r:.18,lab:'법정 최고금리 연 20%'};
 const armyMonths=y=>y<1979?36:y<1984?33:y<1993?30:y<2003?26:y<2011?24:y<2018?21:18;
-const examName=y=>y<1982?'예비고사':y<1994?'학력고사':'수능';
+const bLabN=E=>E.bLab.endsWith(' 이상')?E.bLab.replace(' 이상',' 명 이상'):/\d$/.test(E.bLab)?E.bLab+'명':E.bLab+' 명';
+const examName=y=>y<1981?'예비고사':y<1993?'학력고사':'수능';
 
 /* 역사: [연도, 문장, 통계, 효과] */
 // 시대 사진: 위키미디어 공용의 퍼블릭 도메인·공공누리 제1유형·CC0 사진만 (출처 표시)
@@ -1235,7 +1248,7 @@ class Person{
     this.birthLogs();
   }
   year(){return this.by+this.age;}
-  log(text,tone='',stat='',src=''){let ph=null;
+  log(text,tone='',stat='',src=''){let ph=null;text=wonText(oldText(text,this.year()));
     if(stat&&typeof stat==='string'&&tone!=='hist'&&!/오늘날|이전이라|가치 환산|당시/.test(stat)){const y=this.year();const ys=[...stat.matchAll(/(?:19|20)\d\d/g)].map(m=>+m[0]).filter(v=>v>=1950&&v<=2026);if(ys.length&&Math.min(...ys)-y>=10)stat='오늘날 기준 참고 · '+stat;}
     if(this.isPlayer&&this.used&&tone!=='hist'){const y=this.year();for(const h of PHOTO_HOOK)if(!this.used['ph_'+h[2]]&&y>=h[1][0]&&y<=h[1][1]&&h[0].test(text)){this.used['ph_'+h[2]]=1;ph=PHOTO[h[2]];this.fx.push({type:'photo',ph,caption:text.length>34?text.slice(0,33)+'…':text});break;}}
     this.logs.push({age:this.age,text,tone,stat,src,ph});
@@ -1267,7 +1280,7 @@ class Person{
   birthLogs(){
     const E=this.E,sx=this.sex==='M'?'남자':'여자';
     this.log(`${this.region} ${this.district}에서 ${sx}아이로 태어났습니다.`,'mile',
-      `${E.y===2026?'2025':E.y}년 출생아 ${E.bLab}명 · 합계출산율 ${E.tfr}명 · 출생아 중 ${this.region} ${pctTxt(wshare(E.regions,this.region))}${SEXR[E.y]?` · 출생성비 ${SEXR[E.y]}`:''}`,[E.srcB,E.srcT,regSrc(E,this.region),SEXR_SRC[E.y]]);
+      `${E.y===2026?'2025':E.y}년 출생아 ${bLabN(E)} · 합계출산율 ${E.tfr}명 · 출생아 중 ${this.region} ${pctTxt(wshare(E.regions,this.region))}${SEXR[E.y]?` · 출생성비 ${SEXR[E.y]}`:''}`,[E.srcB,E.srcT,regSrc(E,this.region),SEXR_SRC[E.y]]);
     if(E.y===1990)this.log(`그해 출생성비는 116.5였습니다.`,'','여아 100명당 남아 116.5명','sex90');
     this.log(`${ORDER_LAB[this.order]}입니다. 엄마는 ${this.momAge}세, 아빠는 ${this.dadAge}세.`,'',
       E.y===2026?`출생아 중 ${ORDER_LAB[this.order]} ${wshare(E.order,this.order)*100}% · 엄마 평균 출산 연령 33.8세${this.momAge>=35?'(35세 이상 산모 37.3%)':''} · 아빠 평균 36.1세`
@@ -1315,9 +1328,9 @@ class Person{
       {label:'예체능',sub:'재능이 있다면',w:this.talent&&['음악','그림','운동'].includes(this.talent)?.3:.04,fn:()=>{this.track='예체능';this.artPath=true;this.log('예체능 입시를 준비하기로 했습니다.','choice-ev');}}]);});
     for(const la of [37,44])this.at(la,()=>{if(!this.alive||this.married||this.cand||this.route==='single'&&la===44)return;const M=this.sex==='M',y=this.year(),first=!this.everMarried;
       const os=[];
-      if(y>=1992)os.push({label:'결혼정보회사에 등록해 본격적으로 찾는다',sub:`가입비 약 ${money(Math.round(400*houseIdx(y)/10)*10)} · 조건을 맞춰 여러 번 소개 · ${M?'소득이 높을수록':'나이가 어릴수록'} 유리`,eff:'결혼↑ 자산↓',w:.35,fn:()=>{this.route='agency';this.spendMoney('결혼정보회사',400*houseIdx(y));this.log('결혼정보회사에 등록해 본격적으로 배우자를 찾기 시작했습니다.','choice-ev');this.lateTry(.3+(M?(this.inc-3)*.07:-Math.max(0,this.age-38)*.03),first);}});
+      if(y>=1992)os.push({label:this.used.agencyOnce?'결혼정보회사에 다시 등록한다':'결혼정보회사에 등록해 본격적으로 찾는다',sub:`가입비 약 ${money(Math.round(400*houseIdx(y)/10)*10)} · 조건을 맞춰 여러 번 소개 · ${M?'소득이 높을수록':'나이가 어릴수록'} 유리`,eff:'결혼↑ 자산↓',w:.35,fn:()=>{this.route='agency';this.spendMoney('결혼정보회사',400*houseIdx(y));this.log(this.used.agencyOnce?'결혼정보회사에 다시 등록했습니다.':'결혼정보회사에 등록해 본격적으로 배우자를 찾기 시작했습니다.','choice-ev');this.used.agencyOnce=1;this.lateTry(.3+(M?(this.inc-3)*.07:-Math.max(0,this.age-38)*.03),first);}});
       os.push({label:'주변에 소개를 부탁한다',sub:'친구·친척·직장 동료에게',eff:'결혼↑',w:.3,fn:()=>{this.route='sogae';this.log('주변에 소개를 부탁했습니다.','choice-ev');this.lateTry(.17+clamp((this.rel-60)*.005,-.08,.08),first);}});
-      if(y>=2012)os.push({label:'데이팅 앱을 다시 깐다',sub:M?'남녀 비율 약 8:2 · 남자는 매칭이 어려움':'연락은 많지만 조건은 제각각',w:.15,fn:()=>{this.route='app';this.log('데이팅 앱을 다시 깔았습니다.','choice-ev');this.lateTry(M?.09:.2,first);}});
+      if(y>=2012)os.push({label:this.used.appOnce?'데이팅 앱을 다시 깐다':'데이팅 앱을 깔아 본다',sub:M?'남녀 비율 약 8:2 · 남자는 매칭이 어려움':'연락은 많지만 조건은 제각각',w:.15,fn:()=>{this.route='app';this.log(this.used.appOnce?'데이팅 앱을 다시 깔았습니다.':'데이팅 앱을 깔았습니다.','choice-ev');this.used.appOnce=1;this.lateTry(M?.09:.2,first);}});
       if(M&&y>=1995&&(this.inc<=3||!CAPITAL.has(this.region)))os.push({label:'국제결혼 중개업체를 찾는다',sub:'결혼 이민자와의 만남',w:.06,fn:()=>{this.route='intl';this.log('국제결혼 중개업체를 찾아갔습니다.','choice-ev','전체 혼인 중 외국인과의 혼인 8.6% (2025)',y>=2020?'foreign25':'');this.lateTry(.4,first,true);}});
       os.push({label:'혼자 살기로 마음을 굳힌다',sub:'비혼도 하나의 삶',eff:'안정',w:.5,fn:()=>{this.route='single';this.log('혼자의 삶을 살기로 마음을 굳혔습니다.','choice-ev',y>=2020?'1인 가구 비중 36.1% (2024)':'',y>=2020?'single24':'');}});
       this.choose(la===37?'마흔이 다가옵니다':'마흔을 넘겼습니다',`${this.age}세 · ${first?'결혼하지 않았습니다':'다시 혼자입니다'}. ${E.y===2026||y>=2020?'2025년 평균 초혼 연령 남 33.9세·여 31.6세.':''} 이대로 괜찮을까요?`,os);});
@@ -1327,7 +1340,7 @@ class Person{
       {label:'봉사와 배움',sub:'복지관 강좌·자원봉사',eff:'관계↑ 지식↑',w:.2,fn:()=>{this.st('rel',4);this.st('kn',4);this.log(this.region==='해외'?'동네 커뮤니티 센터에서 배우고 봉사하며 지냈습니다.':'복지관에서 배우고 봉사하며 지냈습니다.','choice-ev');}},
       {label:this.retired&&!this.working?'다시 일을 찾아본다':'계속 일한다',sub:'경비·택배·소일거리 · 대개 월 100만 원 안팎',eff:'소득↑ 건강↓',w:.2,fn:()=>{const was=this.retired&&!this.working;if(was&&R()>.45){this.log('일자리를 알아봤지만 마땅한 곳이 없었습니다.','choice-ev');return;}this.working=true;this.retired=true;if(was||!this.job||!['owner','pro','doctor','artist','instructor'].includes(this.job)){this.job='irregular';this.payZ=Math.min(this.payZ??-1,-.6+randn()*.3);}this.st('hp',-3);this.log(was?'소일거리 일자리를 구했습니다.':'일을 놓지 않기로 했습니다.','choice-ev');}}]);});
     this.at(3,()=>{const yy=this.year();const pre=yy<1991||(yy<2000&&R()<.6)||(!METRO.has(this.region)&&R()<.4);this.log(pre?`동네 골목에서 ${this.sex==='M'?'형, 누나':'언니, 오빠'}들과 뛰어놉니다.`:'어린이집에 다니기 시작했습니다.');});
-    this.at(7,()=>{const s=this.year()<1996?'국민학교':'초등학교';this.log(`${s}에 입학했습니다.`,'',`동갑내기 ${E.bLab.replace(/^약 /,'약 ').replace(/ 이상$/,'')}명${E.bLab.endsWith('이상')?' 이상':''} · ${E.cls}`,[E.srcB,'game']);this.scene('school',`${s} 입학`);if(this.year()<1980)this.fx.push({type:'photo',ph:PHOTO.국민학교,caption:`${s} 입학 · 그 시절 교실`});this.snap(`${s} 입학`,'학교생활이 시작됩니다.');});
+    this.at(7,()=>{const s=this.year()<1996?'국민학교':'초등학교';this.log(`${s}에 입학했습니다.`,'',`동갑내기 ${bLabN(E)} · ${E.cls}`,[E.srcB,'game']);this.scene('school',`${s} 입학`);if(this.year()<1980)this.fx.push({type:'photo',ph:PHOTO.국민학교,caption:`${s} 입학 · 그 시절 교실`});this.snap(`${s} 입학`,'학교생활이 시작됩니다.');});
     this.at(10,()=>{
       const y=this.year();
       if(y>=1980&&y<=1989){this.log('과외가 금지된 시대입니다. 학교 공부와 참고서가 전부입니다.','',y===1980?'':'1980년 7·30 교육개혁으로 과외 전면 금지');return;}
@@ -1349,7 +1362,7 @@ class Person{
       this.hsType=t;this.log(`${t}에 입학했습니다.`);
     });
     if(R()<.8){const fl=()=>{if(this.army){this.at(Math.max(this.armyEnd||0,this.age+1),fl);return;}this.log(`첫 연애를 시작했습니다.`);};this.at(ri(16,24),fl);}
-    this.at(19,()=>{if(this.edu!=='middle')this.csatYear();});
+    this.at(18,()=>{if(this.edu!=='middle')this.csatYear();});
     this.at(20,()=>{
       if(R()<E.smoke[this.sex]){this.smoker=true;if(this.deathAge>50)this.shiftDeath(-3);
         this.log('담배를 피우기 시작했습니다.','bad',E.y===2026?'건강검진 수검자 흡연율 남 31.1%·여 3.8% (2024)':`그 시절 성인 남성 흡연율 약 ${Math.round(E.smoke.M*100)}%`,E.y===2026?'smoke24':'game');}
@@ -1404,14 +1417,14 @@ class Person{
   retake(n,zb,tb){
     const ex=examName(this.year()),nm=['','재수','삼수','사수'][n];
     this.log(`${nm}를 결심했습니다.`,'choice-ev');this.st('hap',-4-n*2);
-    this.at(19+n,()=>{
-      const z1=this.score([.35,.2,.08][n-1]+.35*randn()-.05*(n-1));const best=Math.max(z1,zb);let t1=this.tierOf(best);if(t1==='middle')t1='none';
+    this.at(18+n,()=>{
+      const z1=this.score([.35,.2,.08][n-1]+.35*randn()-.05*(n-1));const best=z1;let t1=this.tierOf(best);if(t1==='middle')t1='none';const dp=Math.round((Phi(z1)-Phi(zb))*100);
       this.distFx(`${nm} 결과는?`,z1,this.tierOf(z1)==='middle'?'none':this.tierOf(z1));
       const better=['med','top','seoul','univ','college','none'].indexOf(t1)<['med','top','seoul','univ','college','none'].indexOf(tb);
-      this.log(better?`${nm} 끝에 ${EDU_LAB[t1]}에 갈 수 있는 성적을 받았습니다.`:`${nm}했지만 성적은 기대만큼 오르지 않았습니다.`,better?'good':'bad',`동갑내기 중 상위 약 ${Math.max(1,Math.round((1-Phi(z1))*100))}%`,'game');
+      this.log(better?`${nm} 끝에 ${EDU_LAB[t1]}에 갈 수 있는 성적을 받았습니다.`:dp>=5?`${nm}로 성적은 올랐지만 목표한 학교에는 조금 못 미쳤습니다.`:dp<=-5?`${nm}했지만 오히려 성적이 떨어졌습니다.`:`${nm}했지만 성적은 기대만큼 오르지 않았습니다.`,better?'good':'bad',`동갑내기 중 상위 약 ${Math.max(1,Math.round((1-Phi(z1))*100))}% (지난해 ${Math.max(1,Math.round((1-Phi(zb))*100))}%) · 재수하면 지난해 합격은 포기한 것이라 올해 성적으로 지원`,'game');
       if(n<3&&['med','top'].indexOf(t1)<0){
         this.choose(`${nm} 결과가 나왔습니다`,`지금 성적이면 ${EDU_LAB[t1]}에 갈 수 있습니다. 같은 나이 친구들은 대학 ${n+1}학년입니다.`,[
-          {label:`${['','','삼수','사수'][n+1]}한다`,sub:`${n+1}년째 수험생활 · 부모님의 부담도 커집니다`,eff:'성적↑? 행복↓↓',w:.12/n,fn:()=>this.retake(n+1,best,t1)},
+          {label:`${['','','삼수','사수'][n+1]}한다`,sub:`${n+1}년째 수험생활 · 부모님의 부담도 커집니다`,eff:'성적↑? 행복↓↓',w:.12/n,fn:()=>this.retake(n+1,z1,t1)},
           {label:'여기서 멈춘다',sub:t1==='none'?'바로 일을 시작':`${EDU_LAB[t1]} 진학`,w:1,fn:()=>{this.log('수험생활을 마쳤습니다.','choice-ev');this.setEdu(t1,19+n);}}]);
       }else this.setEdu(t1,19+n);
     });
@@ -1609,7 +1622,7 @@ class Person{
     const rf=clamp(1+(this.rel-63)*.004,.85,1.15),kf=clamp(1+(this.kn-75)*.004,.85,1.15);
     let p=({top:.78,seoul:.58,univ:.28,college:.12,none:.05}[this.edu]+(this.q===5?.06:0))*this.E.bigMul*(crisis?.55:1)*rf*kf;p=clamp(p,.02,.95);
     if(this.isPlayer)this.log(`대기업 공채 합격 확률 약 ${Math.round(p*100)}%`,'',`학력이 가장 크게 좌우${whyTxt([['관계(인맥·면접)',rf],['지식',kf],['외환위기',crisis?.55:1]])}`,'game');
-    const ok=R()<p;const m=ri(4,16);
+    const ok=R()<p;const m=ri(4,11);
     this.gauge(crisis?'외환위기 직후, 대기업 공채':'대기업 공채 결과는?',p,ok,'합격','불합격','game');
     if(ok){this.setJob('bigco');this.log(`${m}개월 준비 끝에 대기업 정규직에 합격했습니다.`,'good',crisis?'1998년 실업률 7%':'',crisis?'imf':'');
       const site=wpick(y<1990?[['서울',50],['경기',8],['울산',12],['경북',8],['경남',10],['부산',6],['인천',4],['전남',2]]:[['서울',52],['경기',26],['인천',3],['울산',5],['경남',4],['경북',4],['충남',4],['전남',1],['부산',1]]);
@@ -1658,8 +1671,8 @@ class Person{
       const p=clamp(((['med','top','seoul'].includes(this.edu)||this.job==='bigco')?.6:.18)*this.E.capMul,0,.9);
       const sd=pickDist('서울'),gd=pickDist('경기');
       this.choose('어디에서 살까요?',`일자리 제안이 수도권에도 있습니다. 지금은 ${this.region} ${this.district}에 삽니다.`,[
-        {label:`서울 ${J(sd,'으로','로')} 간다`,sub:`월세 부담이 크지만 기회가 많음`,eff:'소득↑ 생활비↑ 관계↓',w:p*.6,fn:()=>{this.moveTo('서울',sd,'일자리를 따라 {from}에서 {to}로 이사했습니다.');if(this.payZ!=null)this.payZ+=.12;this.st('rel',-3);}},
-        {label:`경기 ${J(gd,'으로','로')} 간다`,sub:'서울보다 집값은 낮고 출퇴근은 김',eff:'소득↑',w:p*.4,fn:()=>{this.moveTo('경기',gd,'일자리를 따라 {from}에서 {to}로 이사했습니다.');if(this.payZ!=null)this.payZ+=.07;}},
+        {label:`서울 ${J(sd,'으로','로')} 간다`,sub:`월세 부담이 크지만 기회가 많음`,eff:'소득↑ 생활비↑ 관계↓',w:p*.6,fn:()=>{this.moveTo('서울',sd,['owner','startup','founderBig'].includes(this.job)?'사업 터를 찾아 {from}에서 {to}로 옮겼습니다.':'일자리를 따라 {from}에서 {to}로 이사했습니다.');if(this.payZ!=null)this.payZ+=.12;this.st('rel',-3);}},
+        {label:`경기 ${J(gd,'으로','로')} 간다`,sub:'서울보다 집값은 낮고 출퇴근은 김',eff:'소득↑',w:p*.4,fn:()=>{this.moveTo('경기',gd,['owner','startup','founderBig'].includes(this.job)?'사업 터를 찾아 {from}에서 {to}로 옮겼습니다.':'일자리를 따라 {from}에서 {to}로 이사했습니다.');if(this.payZ!=null)this.payZ+=.07;}},
         {label:`${this.region}에 남는다`,sub:'부모님 곁 · 생활비가 적게 듦',eff:'관계↑ 소득↓',w:1-p,fn:()=>{this.log(`${this.region}에 남기로 했습니다.`,'choice-ev');if(this.payZ!=null)this.payZ-=.05;this.st('rel',3);}}]);
     }
     this.snap('첫 일자리',this.job?`${J(jobLab(this,'job'),'으로','로')} 사회생활을 시작했습니다.`:'사회생활을 시작했습니다.');
@@ -1757,6 +1770,7 @@ class Person{
   }
   nextCand(first){const p=clamp(.85-(this.age-30)*.04,.12,.85)*(first?1:.6);if(R()<p)this.at(this.age+ri(1,4),()=>{if(!this.married)this.propose(first);});}
   marry(first=true,c){
+    if(this.army){this.at(Math.max(this.armyEnd||0,this.age+1),()=>{if(!this.married&&this.alive)this.marry(first,c);});return;}
     const M=this.sex==='M',E=this.E;c=c||this.makeCand();
     const spAge=c.age+(this.age-(c.since??this.age)),foreign=!!c.foreign,spSex=c.sex;
     this.spouse={name:foreign?c.disp:c.name,age0:spAge,at:this.age,foreign:c.foreign,job:c.job,trait:c.trait,q:c.q};this.cand=null;
@@ -2024,7 +2038,7 @@ class Person{
       const base=30;const w=this.workYears;return base+(w>=10?Math.min(180,(this.paySum/w)*.3*Math.min(1,w/30)):0);}
     if(!this.job&&this.jobless)return this.jobless.since===a?this.jobless.ub*.5:0;
     if(this.payZ==null||['home','exam'].includes(this.job)||this.student||this.army)return 0;
-    const v=payFromPct(this.payPct());return ['sme','bigco','public','pro','politician'].includes(this.job)?Math.max(206,v):v;
+    const v=payFromPct(this.payPct());return ['sme','bigco','public','pro','politician'].includes(this.job)&&this.year()>=1988?Math.max(206,v):v;
   }
   spPay(){
     if(!this.married||!this.spouse)return 0;const sa=this.spouse.age0+(this.age-this.spouse.at);
@@ -2534,7 +2548,7 @@ function sceneCanvas(kind,p){const cv=document.createElement('canvas');cv.classN
 let ERA=ERAS[2026],eraKey=2026,fieldIdx=null,fieldAnim=0;
 function buildEras(){
   const box=$('#eras');
-  box.innerHTML=ERA_KEYS.map(k=>`<button class="era" data-k="${k}" aria-pressed="${k===eraKey}"><b>${k}</b><small>${ERAS[k].bLab}명</small></button>`).join('')+
+  box.innerHTML=ERA_KEYS.map(k=>`<button class="era" data-k="${k}" aria-pressed="${k===eraKey}"><b>${k}</b><small>${bLabN(ERAS[k])}</small></button>`).join('')+
     `<button class="era" data-k="rand" aria-pressed="false"><b>무작위</b><small>출생아 수 비례</small></button>`;
   box.querySelectorAll('.era').forEach(b=>b.addEventListener('click',()=>{
     eraKey=b.dataset.k==='rand'?'rand':+b.dataset.k;TRK.ev('era_select',{k:b.dataset.k});
@@ -2649,7 +2663,7 @@ function runReels(rand){
      const rows=[
       ['어머니 나이',`${p.momAge}세`,now?'2025년 엄마 평균 출산 연령 33.8세':`이 시대 엄마 평균 출산 연령 약 ${E.mom}세`,now?'birthPre25':'game'],
       ['아버지 나이',`${p.dadAge}세`,now?'2025년 아빠 평균 연령 36.1세':'부부 나이차 분포로 추정',now?'dad25':'game'],
-      ['그날 함께 태어난 아기',`약 ${fmt(E.births/365)}명`,`${E.y===2026?'2025':E.y}년 출생아 ${E.bLab}명 ÷ 365일`,E.srcB],
+      ['그날 함께 태어난 아기',`약 ${fmt(E.births/365)}명`,`${E.y===2026?'2025':E.y}년 출생아 ${bLabN(E)} ÷ 365일`,E.srcB],
       ['합계출산율',`${E.tfr}명`,'여성 한 명이 평생 낳을 것으로 예상되는 아이 수',E.srcT],
       ['그해 기대수명',`${E.e0[sx]}세`,`${E.y===1960?'1960~65년':E.y===2026?'2024년':E.y+'년'} 생명표 · ${sx==='M'?'남자':'여자'}`,E.srcE],
       ['그해 교통사고 사망자',(()=>{const T=trafY(Math.min(E.y,2025));return `${fmt(Math.round(T.d))}명`;})(),(()=>{const T=trafY(Math.min(E.y,2025));return `${E.y===2026?'2025':E.y}년 · 인구 10만 명당 ${T.dR.toFixed(1)}명${E.y<1991?' · 1991년 1만 3,429명으로 정점':' · 1991년 정점 대비 81% 감소'}`;})(),trafSrc(Math.min(E.y,2025))],
@@ -2672,7 +2686,7 @@ function begin(){
   $('#reveal').hidden=true;$('#game').hidden=false;$('#controls').hidden=false;
   $('#endBox').hidden=true;$('#endBox').innerHTML='';$('#log').innerHTML='';$('#choiceBox').innerHTML='';$('#fxBox').innerHTML='';
   $('#status').classList.remove('dead');$('#pauseBtn').textContent='멈춤';lastW={};skipMode=false;$('#skipBtn2').setAttribute('aria-pressed','false');
-  player.logs.unshift({age:0,text:`${J(player.name,'으로','로')} 태어났습니다. 그날 대한민국에서 함께 태어난 아기는 약 ${fmt(ERA.perDay)}명.`,tone:'mile',stat:`${ERA.y===2026?'2025':ERA.y}년 출생아 ${ERA.bLab}명 ÷ 365일`,src:ERA.srcB});
+  player.logs.unshift({age:0,text:`${J(player.name,'으로','로')} 태어났습니다. 그날 대한민국에서 함께 태어난 아기는 약 ${fmt(ERA.perDay)}명.`,tone:'mile',stat:`${ERA.y===2026?'2025':ERA.y}년 출생아 ${bLabN(ERA)} ÷ 365일`,src:ERA.srcB});
   player.start();peers.forEach(q=>q.start());TRK.ev('game_start',{sex:player.sex,rg:player.birthRegion,q:player.q});window.__gs=Date.now();window.__nc=0;
   player.fx.unshift({type:'scene',kind:'birth',caption:`${ERA.y}년, ${player.birthRegion}에서 태어나다`});
   peerSeen=peers.map(q=>q.logs.length);
@@ -2719,7 +2733,7 @@ function render(){
   if(shownAge!==lastAge){ageEl.innerHTML=`${shownAge}<small>세</small>`;ageEl.classList.remove('bump');void ageEl.offsetWidth;ageEl.classList.add('bump');lastAge=shownAge;}
   $('#yearLab').textContent=`${p.year()}년 · ${p.sex==='M'?'남':'여'}${p.year()>NOW?' · 미래':''}`;
   $('#pname').textContent=p.name;
-  const chips=[`${p.region} ${p.district}`,p.status()];if(p.home)chips.push('자가');
+  const chips=[`${p.region} ${dn(p.region,p.district,p.alive?p.year():p.by+p.deathAt)}`,p.status()];if(p.home)chips.push('자가');
   if(p.alive&&p.payZ!=null&&p.job&&!['home','exam'].includes(p.job)&&(!p.retired||p.working))chips.push(`소득 ${topTxt(1-(p.payPct()))}`);
   $('#chips').innerHTML=chips.map((c,i)=>`<span class="chip${!p.alive&&i===1?' dead':''}">${c}</span>`).join('');
   renderWallet(p);renderStats(p);renderFocus(p);renderMap(p);if(typeof stageTick==='function')stageTick();
@@ -2868,7 +2882,7 @@ function koreaMap(p){
     ${abroad?`<text x="${W-6}" y="18" text-anchor="end" fill="var(--accent)">✈ ${p.district}</text>`:''}
   </svg>`;
   const moves=pl.length-1;
-  return `<div class="mcard"><div class="secthead"><h3>사는 곳</h3><span class="fine">${p.alive?'지금':'마지막'} <b style="color:var(--accent)">${p.region} ${p.district}</b></span></div>${svg}<p class="fine">태어난 곳 ${p.birthRegion} ${p.birthDistrict}${moves>0?` · 이사 ${moves}번 (점선)`:' · 아직 이사하지 않음'}</p></div>`;
+  return `<div class="mcard"><div class="secthead"><h3>사는 곳</h3><span class="fine">${p.alive?'지금':'마지막'} <b style="color:var(--accent)">${p.region} ${dn(p.region,p.district,p.alive?p.year():p.by+p.deathAt)}</b></span></div>${svg}<p class="fine">태어난 곳 ${p.birthRegion} ${p.birthDistrict}${moves>0?` · 이사 ${moves}번 (점선)`:' · 아직 이사하지 않음'}</p></div>`;
 }
 let lastW={};
 function renderWallet(p){
@@ -2900,12 +2914,12 @@ function evEl(e,isNew){
   return li;
 }
 let autoMode=false,skipMode=false,choiceTimer=null,panelMin=false;
-function cstrip(p){const own=p.ownPay(),sp=p.spPay();return `<div class="cstrip"><span><b>${p.region} ${p.district}</b></span><span>${p.status()}</span><span>월 <b>${money(own+sp)}</b></span><span>순자산 <b>${money(p.netWorth())}</b></span><span>${p.home?'자가':p.housing==='parents'?'부모님 집':'전월세'}</span><span>건강 ${Math.round(p.hp)} · 행복 ${Math.round(p.hap)} · 관계 ${Math.round(p.rel)}</span></div>`;}
+function cstrip(p){const own=p.ownPay(),sp=p.spPay();return `<div class="cstrip"><span><b>${p.region} ${dn(p.region,p.district,p.alive?p.year():p.by+p.deathAt)}</b></span><span>${p.status()}</span><span>월 <b>${money(own+sp)}</b></span><span>순자산 <b>${money(p.netWorth())}</b></span><span>${p.home?'자가':p.housing==='parents'?'부모님 집':'전월세'}</span><span>건강 ${Math.round(p.hp)} · 행복 ${Math.round(p.hap)} · 관계 ${Math.round(p.rel)}</span></div>`;}
 function snapHtml(p){
   const own=p.ownPay(),sp=p.spPay(),nw=p.netWorth();const kidsT=p.kids.map((k,i)=>`${k} ${p.age-p.kidAges[i]}세`).join(', ');
   const recent=p.logs.filter(e=>e.tone!=='hist'&&!/세\. 같은 해/.test(e.text)).slice(-5).reverse();
   return `<div class="snap">
-   <div><span>사는 곳</span>${p.region} ${p.district} · ${p.home?'자가 '+money(p.homeVal):!(p.afterDone||p.married)?(p.army?'군 생활관':p.leftHome?'하숙·자취 (생활비는 부모님이)':'부모님 집'):p.housing==='shelter'?'쉼터·쪽방':'전월세'}</div>
+   <div><span>사는 곳</span>${p.region} ${dn(p.region,p.district,p.alive?p.year():p.by+p.deathAt)} · ${p.home?'자가 '+money(p.homeVal):!(p.afterDone||p.married)?(p.army?'군 생활관':p.leftHome?'하숙·자취 (생활비는 부모님이)':'부모님 집'):p.housing==='shelter'?'쉼터·쪽방':'전월세'}</div>
    <div><span>하는 일</span>${p.status()}${p.payZ!=null&&p.job&&own>0&&!(p.retired&&!p.working)?` · 월 ${money(own)} (${topTxt(1-(p.payPct()))})`:''}</div>
    ${!(p.afterDone||p.married)?`<div><span>집안 형편</span>${WEALTH_W[p.q]} 집 · 부모 소득 ${QLAB[p.q]}</div>`:`<div><span>돈</span>현금 ${money(p.cash)} · 빚 ${money(p.debt+p.mort)} · 순자산 ${money(nw)}${(p.afterDone||p.married)?` (가구 ${topTxt(1-(nwPct(nw)))})`:''}</div>`}
    <div><span>가족</span>${[p.momDead?'':`어머니 ${p.momAge+p.age}세`,p.dadDead?'':`아버지 ${p.dadAge+p.age}세`].filter(Boolean).join(' · ')}${p.order>1||p.hasYounger?' · 형제자매':''}${p.age>=18?' · ':''}${p.age<18?'':p.married&&p.spouse?`배우자 ${p.spouse.name} (${p.spouse.age0+(p.age-p.spouse.at)}세${p.spouse.job?' · '+p.spouse.job:''}${sp>0?' · 월 '+money(sp):''})`:p.divorced?'이혼':p.widowed?'사별':'미혼'}${kidsT?' · 자녀 '+kidsT:''}${p.grandCount?' · 손주 '+p.grandCount+'명':''}</div>
@@ -3023,7 +3037,7 @@ function lifeSummary(q){
   if(q.everMarried)out.push(q.divorced?`결혼했다가 헤어졌습니다.`:q.widowed?`배우자와 ${q.marriedYears}년을 함께하고 먼저 떠나보냈습니다.`:`배우자와 ${q.marriedYears}년을 함께 살았습니다.`);else if(q.deathAt>=35)out.push('결혼하지 않았습니다.');
   if(q.kids.length)out.push(`아이 ${q.kids.length}명을 키웠습니다.`);
   if(q.grandCount)out.push(`손주 ${q.grandCount}명을 보았습니다.`);
-  if(moved&&q.deathAt>=20)out.push(`마지막에는 ${q.region} ${q.district}에서 ${q.home?'자기 집에':''} 살았습니다.`.replace('  ',' '));else if(q.home)out.push('자기 집에서 살았습니다.');
+  if(moved&&q.deathAt>=20)out.push(`마지막에는 ${q.region} ${dn(q.region,q.district,q.alive?q.year():q.by+q.deathAt)}에서 ${q.home?'자기 집에':''} 살았습니다.`.replace('  ',' '));else if(q.home)out.push('자기 집에서 살았습니다.');
   out.push(`${q.deathAt}세에 ${J(q.cause,'으로','로')} 세상을 떠났습니다.`);
   return out.join(' ');
 }
@@ -3117,7 +3131,7 @@ function endGame2(){
     p.edu?['학력',EDU_LAB[p.edu]]:null,
     p.mainJob?['주된 일',jobLab(p,'mainJob')]:null,
     p.deathAt>=20?['가족',p.everMarried?`${p.divorced?'이혼 경험 · ':''}${p.widowed?'사별 · ':''}자녀 ${p.kids.length}명`:'결혼하지 않음']:null,
-    p.deathAt>=20?['마지막 거처',`${p.region} ${p.district}`+(p.home?' · 자가':'')]:null,
+    p.deathAt>=20?['마지막 거처',`${p.region} ${dn(p.region,p.district,p.alive?p.year():p.by+p.deathAt)}`+(p.home?' · 자가':'')]:null,
     (p.afterDone||p.married)?['남긴 재산',`순자산 ${money(p.netWorth())} · 2025년 가구 기준 ${topTxt(1-(nwPct(p.netWorth())))}`]:null
   ].filter(Boolean);
   const verdict=same<1?`이 조합으로 사는 사람은 대한민국 5,100만 명 가운데 <b>당신 한 명뿐일지도 모릅니다.</b> 말 그대로 5천만분의 1입니다.`

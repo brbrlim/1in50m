@@ -622,7 +622,8 @@ for(const e of Object.values(ERAS)){ // 학력 컷 계산
 }
 const ERA_KEYS=[1960,1970,1980,1990,2026];
 
-const SURN=[['김',21.6],['이',14.8],['박',8.5],['최',4.7],['정',4.4],['강',2.4],['조',2.1],['윤',2.1],['장',2.0],['임',1.7],['한',1.5],['오',1.5],['서',1.5],['신',1.5],['권',1.4],['황',1.4],['안',1.4],['송',1.4],['전',1.1],['홍',1.1]];
+const SURN=[['김',21.6],['이',14.8],['박',8.5],['최',4.7],['정',4.4],['강',2.4],['조',2.1],['윤',2.1],['장',2.0],['임',1.7],['한',1.5],['오',1.5],['서',1.5],['신',1.5],['권',1.4],['황',1.4],['안',1.4],['송',1.4],['전',1.1],['홍',1.1],
+ ['유',1.1],['고',.9],['문',.9],['손',.9],['양',.8],['배',.8],['백',.7],['허',.6],['남',.5],['심',.5],['하',.5],['노',.4],['곽',.4],['성',.4],['차',.4],['주',.4],['우',.4],['구',.4],['민',.3],['류',.3],['나',.3],['진',.3],['지',.3],['엄',.3],['채',.2],['원',.2],['천',.2],['방',.2],['공',.2],['현',.2]]; // 21위 이하는 대략값(게임 설정)
 /* 이름: 연대별 인기 순위(출처 있음) + 그 시대에 흔했던 이름(게임 설정) */
 const NAME_TOP={ // [이름, 가중치] 순위 순
  1960:{M:[['영수',10],['성호',7],['영호',5]],F:[['미숙',10],['미경',7],['영숙',5]],src:'names60'},
@@ -642,6 +643,20 @@ const NAME_REST={
  2010:{M:['도윤','시우','주원','하준','지호','지후','준우','건우','현우','유준'],F:['지우','하은','민서','하윤','지유','윤서','채원','수아','지민','지아']},
  2026:{M:['서준','은우','지호','선우','유준','수호','이안','우진','도하','건우'],F:['하윤','서아','하린','지유','채아','수아','시아','유나','윤슬','리아']}
 };
+// 대법원 출생신고 이름 상위 10 (1948~2008년 10년 간격 발표, 2009) — 순위만 공개, 빈도 미공개
+const NAME_RANK={
+ 1958:{M:'영수 영철 영호 영식 성수 성호 상철 종수 경수 상호',F:'영숙 정숙 영희 명숙 경숙 순자 정희 순옥 영순 현숙'},
+ 1968:{M:'성호 영수 영호 영철 정호 영진 병철 진호 성수 재호',F:'미경 미숙 경희 경숙 영숙 미영 영미 정희 정숙 현숙'},
+ 1978:{M:'정훈 성훈 상훈 성진 지훈 성호 정호 준호 성민 민수',F:'지영 은정 미영 현정 은주 은영 현주 선영 지연 혜진'},
+ 1988:{M:'지훈 성민 현우 정훈 동현 준영 민수 준호 상현 진우',F:'지혜 지은 수진 혜진 은지 지영 아름 지현 지연 보람'},
+ 1998:{M:'동현 지훈 성민 현우 준호 민석 민수 준혁 준영 승현',F:'유진 민지 수빈 지원 지현 지은 현지 은지 예진 예지'},
+ 2008:{M:'민준 지훈 현우 준서 우진 건우 예준 현준 도현 동현',F:'서연 민서 지민 서현 서윤 예은 하은 지우 수빈 윤서'}};
+const RANK_YEARS=[1958,1968,1978,1988,1998,2008,2025];
+const rankYear=y=>RANK_YEARS.reduce((a,b)=>Math.abs(b-y)<Math.abs(a-y)?b:a);
+const topList=(y,sex)=>{const ry=rankYear(y);if(ry===2025)return NAME_TOP[2026][sex];return NAME_RANK[ry][sex].split(' ').map((n,i)=>[n,10/Math.pow(i+1,.8)]);};
+// 성씨: 2015 인구주택총조사 상위 10 (11위 이하는 각각 인구의 1.5% 이하)
+const SURN15={김:21.5,이:14.7,박:8.4,최:4.7,정:4.3,강:2.4,조:2.1,윤:2.1,장:2.0,임:1.7};
+const surnStat=sn=>{const i=SURN.findIndex(x=>x[0]===sn);const p=SURN15[sn];return p?`${sn}씨 · 인구의 ${p}%로 ${i+1}위 (2015 인구주택총조사) · 상위 10개 성씨 순서는 30년 전(1985) 조사와 같음`:i>=0&&i<20?`${sn}씨 · 인구 순위 11~20위권 (11위 이하 성씨는 각각 인구의 1.5% 이하 · 2015 인구주택총조사)`:i>=0?`${sn}씨 · 인구 순위 20위 밖 · 각각 인구의 1% 안팎 이하 (2015 인구주택총조사 기준 대략값)`:`${sn}씨 · 비교적 드문 성씨`;};
 const NAMEKEY=y=>y>=2020?2026:clamp(Math.floor(y/10)*10,1960,2010);
 // 실제로는 1위 이름도 그해 아이의 1~2%뿐: 상위 이름은 그 비율만큼만, 나머지는 그 시대에 흔했던 이름(게임 설정)과 앞뒤 시대 이름에서 고루
 const NAME_POOL={
@@ -661,22 +676,26 @@ const NAME_POOL={
        F:'서윤 서아 아린 이서 지안 하윤 하린 지유 채아 수아 시아 유나 윤슬 리아 이솔 로아 하은 아윤 지아 서하 다인 연우 이나 세아 하율 은서 소이 채이 서이 예나 나은 시은 유주 다온 이음 로하 아라 지우 라엘 하엘'}};
 for(const k in NAME_POOL)for(const sx of ['M','F'])NAME_POOL[k][sx]=[...new Set(NAME_POOL[k][sx].split(' ').concat(NAME_REST[k][sx]))];
 const POOL_KEYS=Object.keys(NAME_POOL).map(Number);
-function pickGiven(key,sex,ex){
-  const T=NAME_TOP[key],top=T[sex],topN=new Set(top.map(t=>t[0]));
+function pickGiven(key,sex,ex,yr){
+  if(yr==null)yr=+key>=2026?2025:+key+5;const ry=rankYear(yr);const top=topList(yr,sex),topN=new Set(top.map(t=>t[0]));
   const ki=POOL_KEYS.indexOf(+key),at=d=>POOL_KEYS[ki+d]?NAME_POOL[POOL_KEYS[ki+d]][sex]:[];
   const own=NAME_POOL[key][sex].filter(n=>!topN.has(n)),seen=new Set([...topN,...own]);
   const near=[...new Set([...at(-1),...at(1)])].filter(n=>!seen.has(n));near.forEach(n=>seen.add(n));
   const far=[...new Set([...at(-2),...at(2)])].filter(n=>!seen.has(n));
-  const pTop=T.counts?.067:.045; // 2025년 상위 5개 이름 합계 = 남아 약 6.9%·여아 약 6.5% (출생신고 기준)
-  for(let k=0;k<12;k++){const u=R();const edge=ki===0||ki===POOL_KEYS.length-1;const L=edge?(u<.68?own:near):(u<.5?own:u<.82?near:far);const n=u<pTop?wpick(top):L[ri(0,L.length-1)];if(!ex||!ex.includes(n))return n;}
+  const pTop=ry===2025?.067:ry<=1968?.12:.09; // 2025년 상위 5개 이름 합계 = 남아 약 6.9%·여아 약 6.5% (출생신고 기준) · 옛 시대는 이름이 더 몰려 있었음(게임 추정)
+  for(let k=0;k<12;k++){const u=R();const edge=ki===0||ki===POOL_KEYS.length-1;const L=+key>=2000&&far.length?(u<.5?own:u<.8?near:far):(u<.62?own:near); /* 옛 시대엔 두 시대 떨어진 이름(예: 1980년대생 '말순')이 섞이지 않게 */const n=u<pTop?wpick(top):L[ri(0,L.length-1)];if(!ex||!ex.includes(n))return n;}
   return own[ri(0,own.length-1)];
 }
-function nameRank(key,sex,given){
-  const T=NAME_TOP[key];const i=T[sex].findIndex(t=>t[0]===given);if(i<0)return null;
-  const who=sex==='M'?'남자':'여자';
-  return{rank:i+1,src:T.src,text:T.counts?`2025년 출생신고 ${who}아이 이름 ${i+1}위 (${fmt(T[sex][i][1])}명)`:`${key}년대 ${who} 이름 인기 ${i+1}위`};
+function nameRank(y,sex,given){
+  const ry=rankYear(y),L=topList(y,sex),i=L.findIndex(t=>t[0]===given),who=sex==='M'?'남자':'여자';
+  const src=ry===2025?'names25':'names09',top3=L.slice(0,3).map(t=>t[0]).join('·');
+  if(i<0)return{rank:0,src,text:`${ry}년 출생신고 ${who} 이름 상위 ${L.length}위 밖 · 그해 1~3위는 ${top3}`,top3};
+  if(ry===2025){const nb=ERAS[2026].births*(sex==='M'?ERAS[2026].male:1-ERAS[2026].male);return{rank:i+1,src,top3,text:`2025년 출생신고 ${who}아이 이름 ${i+1}위 · ${fmt(L[i][1])}명 (그해 ${who}아이의 약 ${(L[i][1]/nb*100).toFixed(1)}%)`};}
+  return{rank:i+1,src,top3,text:`${ry}년 출생신고 ${who} 이름 ${i+1}위 (대법원 · 10년 간격 집계, 빈도는 비공개)`};
 }
 const ORDER_LAB={1:'첫째',2:'둘째',3:'셋째 이상'};
+// 부모가 다음 아이를 더 낳을 확률 [첫째 뒤, 둘째 뒤, 셋째 이후] — 출생 순위 분포·합계출산율을 바탕으로 한 게임 추정
+const SIBC={1960:[.9,.8,.7],1970:[.88,.65,.5],1980:[.78,.4,.25],1990:[.8,.3,.15],2026:[.5,.2,.1]};
 const QLAB={1:'하위 20%',2:'중하위',3:'중간',4:'중상위',5:'상위 20%'};
 const EDU_LAB={med:'의약계열',top:'서울 최상위권 대학',seoul:'서울 소재 4년제',univ:'수도권·지역 4년제',college:'전문대학',none:'고등학교 졸업',middle:'중학교까지'};
 const EDU_SHORT={med:'의약',top:'최상위',seoul:'서울',univ:'4년제',college:'전문대',none:'고졸',middle:'중졸'};
@@ -781,7 +800,11 @@ const SRC={
  order25:['2025년 출생 순위별 출생아 (첫째 62.4%·둘째 31.2%·셋째 이상 6.4%)','https://www.insight.co.kr/news/570457'],
  wage24:['국가데이터처 「2024년 임금근로일자리 소득(보수)」','https://www.newsis.com/view/NISX20260223_0003523081'],
  names60:['대법원 출생신고 이름 분석(이투데이)','https://www.etoday.co.kr/news/view/1331682'],
- names25:['대법원 전자가족관계등록 통계 2025년 잠정치(메인타임스)','https://v.daum.net/v/KVYCHLd8Gf']
+ names25:['대법원 전자가족관계등록 통계 2025년 잠정치(메인타임스)','https://v.daum.net/v/KVYCHLd8Gf'],
+ names09:['대법원 1948~2008년 출생신고 이름 10년 간격 상위 10 (파이낸셜뉴스 2009)','https://www.fnnews.com/news/200901231312518490'],
+ surn15:['통계청 2015 인구주택총조사 성씨 상위 10 (서울신문)','https://m.seoul.co.kr/news/2021/01/25/20210125500093'],
+ chuseok26:['한국리서치 2026 추석 가족 만남 계획 (매일신문)','https://www.imaeil.com/page/view/2026092408341832651'],
+ muyeon25:['보건복지부 2025년 무연고 사망자 통계 (문화일보)','https://www.munhwa.com/article/11618909']
 };
 const SRC_TEXT={game:'게임 설정(근사)',def:'소득 5분위 정의',math:'6/45 조합 수 계산'};
 function srcHtml(src,lead='출처 '){
@@ -1129,7 +1152,6 @@ const EVT=[
  {id:'housefar',a:[28,45],p:.5,c:(p,y)=>(y===2020||y===2021)&&!p.home&&p.region!=='해외',t:p=>{p.hfY=p.year();return '집값이 치솟아 내 집 마련이 한참 멀어졌습니다.';},tone:'bad'},
  {id:'fraud',a:[25,80],p:.004,t:p=>{const d=Math.min(p.cash,1000+R()*4000);p.cash-=d;return d>=100?`지인에게 빌려준 ${money(d)}을 떼였습니다.`:'지인에게 돈을 빌려줬다가 떼였습니다.';},tone:'bad'},
  {id:'traffic',a:[25,70],p:.05,c:(p,y)=>y<2010&&p.region!==p.birthRegion&&p.region!=='해외',t:'명절 귀성길 고속도로에서 10시간을 보냈습니다.'},
- {id:'sibwed',a:[24,34],p:.1,c:p=>p.order>=2,t:'형제의 결혼식에서 축가를 불렀습니다.'},
  {id:'bp',a:[45,70],p:.05,t:'건강검진에서 혈압이 높다는 말을 들었습니다.',tone:'bad'},
  {id:'disc',a:[35,65],p:.03,c:p=>!(p.ills||[]).includes('허리 디스크'),t:p=>{(p.ills=p.ills||[]).push('허리 디스크');return '허리 디스크로 한동안 고생했습니다.';},tone:'bad'},
  {id:'fracture',a:[10,80],p:.008,t:'넘어져 팔이 부러졌습니다.',tone:'bad'},
@@ -1226,7 +1248,7 @@ class Person{
     const E=this.E=era;this.by=E.y;
     this.id=++uid;this.isPlayer=isPlayer;this.old=E.y<1990;
     this.sex=R()<E.male?'M':'F';
-    this.given=pickGiven(E.y,this.sex);this.nameRank=nameRank(E.y,this.sex,this.given);
+    this.given=pickGiven(E.y,this.sex,null,E.y);this.nameRank=nameRank(E.y,this.sex,this.given);
     this.name=wpick(SURN)+this.given;
     this.region=wpick(E.regions);this.birthRegion=this.region;this.district=histName(this.region,pickDist(this.region,ERA_ALPHA[E.y]||1),E.y);this.birthDistrict=this.district;this.luck=clamp(tdist3()*.8,-5,5);this.tough=R()<.01;this.outliers=[];
     this.q=ri(1,5);
@@ -1286,23 +1308,24 @@ class Person{
     const E=this.E,sx=this.sex==='M'?'남자':'여자';
     this.log(`${this.region} ${this.district}에서 ${sx}아이로 태어났습니다.`,'mile',
       `${E.y===2026?'2025':E.y}년 출생아 ${bLabN(E)} · 합계출산율 ${E.tfr}명 · 출생아 중 ${this.region} ${pctTxt(wshare(E.regions,this.region))}${SEXR[E.y]?` · 출생성비 ${SEXR[E.y]}`:''}`,[E.srcB,E.srcT,regSrc(E,this.region),SEXR_SRC[E.y]]);
-    this.log(`${ORDER_LAB[this.order]}입니다. 엄마는 ${this.momAge}세, 아빠는 ${this.dadAge}세.`,'',
+    {const no=this.sibs.filter(x=>x.gap>0).length;this.nth=no+1;}
+    this.log(`${['첫째','둘째','셋째','넷째','다섯째','여섯째','일곱째','여덟째'][this.nth-1]}입니다.${this.nth>1?` 위로 ${this.sibSummary()}${batchim(this.sibSummary())?'이':'가'} 있습니다.`:''} 엄마는 ${this.momAge}세, 아빠는 ${this.dadAge}세.`,'',
       E.y===2026?`출생아 중 ${ORDER_LAB[this.order]} ${wshare(E.order,this.order)*100}% · 엄마 평균 출산 연령 33.8세${this.momAge>=35?'(35세 이상 산모 37.3%)':''} · 아빠 평균 36.1세`
         :`그해 출생아 중 ${ORDER_LAB[this.order]} 약 ${Math.round(wshare(E.order,this.order)*100)}% · 엄마 평균 출산 연령 약 ${E.mom}세`,E.y===2026?['order25','birthPre25','dad25']:'game');
     this.log(`같은 해 태어난 ${sx}아이 100명 중 약 ${(u5Of(E,this.sex)*100).toFixed(1)}명은 다섯 살이 되기 전에 세상을 떠납니다.`,'',E.y===2026?'2024년 생명표의 5세까지 생존확률':'이 시대 영유아 사망 확률(게임 추정) · 생명표 바탕',E.y===2026?'life24':['game','life24']);
-    if(this.nameRank)this.log(`이름 '${this.given}'${batchim(this.given)?'은':'는'} 그해 가장 인기 있던 이름 가운데 하나입니다.`,'',this.nameRank.text,this.nameRank.src);
+    {const nr=this.nameRank,sn=this.name.slice(0,1);this.log(nr.rank?`이름 '${this.given}'${batchim(this.given)?'은':'는'} 그 무렵 ${nr.rank}번째로 많이 지은 이름입니다.`:`이름 '${this.given}'${batchim(this.given)?'은':'는'} 그 무렵 흔하던 이름이지만 10위 안에는 들지 않았습니다.`,'',`${nr.text} · ${surnStat(sn)}`,[nr.src,'surn15']);}
     this.log(`부모의 소득은 ${QLAB[this.q]} 구간입니다.`,this.q>=4?'good':this.q<=1?'bad':'','소득 5분위 중 '+this.q+'분위 · 각 구간 20%','def');
     if(E.y<2026)this.log(`그해 태어난 아이의 기대수명은 ${this.sex==='M'?'남 '+E.e0.M:'여 '+E.e0.F}년이었습니다.`,'',`${E.y}년 생명표 기준 · 실제 삶은 의료 발전과 함께 길어집니다`,E.srcE);
   }
   plan(){
     const M=this.sex==='M',E=this.E;
+    this.makeSibs();this.planSibs();
     for(const h of HIST){
       if(h[0]<this.by)continue;const a=h[0]-this.by;
       const fire=()=>{this.log(a===0?`태어난 해, ${h[1]}`:(this.region==='해외'?'한국에서는 ':'')+h[1],'hist',h[2]||'',h[4]||'');if(h[3])h[3](this);this.lastHist={y:h[0],t:h[1]};{const ph=photoFor(h[1]);if(ph&&this.isPlayer)this.fx.push({type:'photo',ph,caption:h[1]});}};
       if(a===0)(this.atBirth=this.atBirth||[]).push(fire);else this.at(a,fire);
     }
     if(E.migrate&&!CAPITAL.has(this.region)&&R()<E.migrate){const a=ri(5,15);this.at(a,()=>{if(this.edu)return;this.moveTo(R()<.65?'서울':'경기',null,'가족이 일자리를 찾아 {from}에서 {to}로 올라왔습니다.');});}
-    if(this.order===1){const pk=1-wshare(E.kids,1)/Math.max(.01,1-wshare(E.kids,0));if(R()<pk){this.hasYounger=true;this.at(ri(2,4),()=>this.log('동생이 태어났습니다.','good'));}}
     // 같은 해 태어난 사람 중 생존 비율
     for(const a of [1,5,15,30,50]){this.at(a,()=>{const sv=survAt(E,this.sex,a);const now=E.y!==2026?survAt(ERAS[2026],this.sex,a):null;
       this.log(a===5&&E.u5?`다섯 번째 생일. 이 시대엔 아이 ${Math.round(1/u5Of(E,this.sex))}명 중 1명꼴로 다섯 살을 넘기지 못했습니다. 당신은 그 시기를 넘겼습니다.`:`${a}세. 같은 해 태어난 ${sexKid(this.sex)} 중 약 ${Math.round(sv*100)}%가 지금도 살아 있습니다.${now!=null?` 2026년생이라면 ${Math.round(now*100)}%입니다.`:''}`,'mile','',['life24','game']);});}
@@ -1754,12 +1777,12 @@ class Person{
     let met=abroad?(rk==='ab_kor'?'한인 교회':rk==='app'?'데이팅 앱':rk==='ab_work'?'현지 회사':wpick([['현지 회사',2],['친구 소개',2],['한인 모임',1]])):(RT.met||wpick(E.meet));
     if(met==='직장'){if(!this.working2())met=wpick([['친구 모임',2],['지인 소개',2]]);else if(['owner','startup','founderBig'].includes(this.job))met=this.job==='owner'&&this.shop!=='회사'?'가게 손님':'거래처';else if(R()<.6&&JOB[this.job])jb=[jobLab(this,'job'),1,this.payZ??0];}
     return{sex:sx,age,foreign,korAb,route:rk,
-      name:wpick(SURN)+pickGiven(NAMEKEY(y-age),sx),job:jb[0],payZ:pz,q,trait:CAND_TRAIT[ri(0,CAND_TRAIT.length-1)],
+      name:wpick(SURN)+pickGiven(NAMEKEY(y-age),sx,null,y-age),job:jb[0],payZ:pz,q,trait:CAND_TRAIT[ri(0,CAND_TRAIT.length-1)],
       met,edu:lv===3&&['top','seoul','med'].includes(this.edu)&&R()<.6?'서울 소재 대학 졸업':(abroad&&!korAb?'현지 '+EDNAME[lv].replace('4년제 ',''):EDNAME[lv])};
   }
   propose(first){
     if(this.married||!this.alive||this.cand)return;if(this.route==='single'&&R()<.8)return;if(this.army){this.at(Math.max(this.armyEnd||0,this.age+1),()=>this.propose(first));return;}const c=this.cand=this.makeCand();c.since=this.age;
-    this.seenNames=this.seenNames||new Set();for(let k=0;k<5&&this.seenNames.has(c.name);k++)c.name=wpick(SURN)+pickGiven(NAMEKEY(this.year()-c.age),c.sex);this.seenNames.add(c.name);
+    this.seenNames=this.seenNames||new Set();for(let k=0;k<5&&this.seenNames.has(c.name);k++)c.name=wpick(SURN)+pickGiven(NAMEKEY(this.year()-c.age),c.sex,null,this.year()-c.age);this.seenNames.add(c.name);
     if(c.foreign){const L=(FNAMES[c.foreign]||FN_EXTRA[c.foreign]||FNAMES['미국'])[c.sex];c.name=L[ri(0,L.length-1)];}const nm=c.name;c.disp=nm;
     this.log(`${c.met==='국제결혼 중개업체'?'국제결혼 중개업체를 통해':c.met==='직장'||c.met==='거래처'||c.met==='현지 회사'||c.met==='한인 교회'||c.met==='한인 모임'?c.met+'에서':J(c.met,'으로','로')} 만난 ${nm}(${c.age}세 · ${c.job})${batchim(nm)?'과':'와'} ${this.old?'만나기 시작했습니다.':'연애를 시작했습니다.'}`);
     this.at(this.age+1,()=>this.proposalChoice(first));
@@ -1831,7 +1854,7 @@ class Person{
        if(lost)break;}
       const ba=a,ma=wAge+(ba-this.age),extra=i>=n;if(ma>45)break;
       this.at(ba,()=>{if(!this.married)return;const kx=R()<this.E.male?'M':'F';const ky=this.by+ba;
-        const nk=NAMEKEY(ky);const g=pickGiven(nk,kx,[this.given,...this.kids,(this.spouse&&this.spouse.name||'').slice(1)]);const nr=nameRank(nk,kx,g);
+        const nk=NAMEKEY(ky);const g=pickGiven(nk,kx,[this.given,...this.kids,...(this.sibs||[]).map(s=>s.given),(this.spouse&&this.spouse.name||'').slice(1)],ky);const nr=(r=>r.rank?r:null)(nameRank(ky,kx,g));
         this.kids.push(g);(this.kidAges=this.kidAges||[]).push(this.age);
         {const kb=this.age;
          this.at(kb+1,()=>this.log(`${J(g,'이','가')} 처음으로 '${this.sex==='M'?'아빠':'엄마'}'라고 불렀습니다.`,'good'));
@@ -1958,14 +1981,14 @@ class Person{
   }
   careChoice(who){
     if(!this.alive||this.army||(who==='어머니'?this.momDead:this.dadDead))return;
-    if(this.region==='해외'){const sib=this.order>1||this.hasYounger;this.choose(`${who}의 간병`,`한국에 계신 ${who}가 거동이 불편해지셨습니다. 나는 ${this.district}에 살고 있습니다.`,[
+    if(this.region==='해외'){const sib=this.sibAlive().length>0;this.choose(`${who}의 간병`,`한국에 계신 ${who}가 거동이 불편해지셨습니다. 나는 ${this.district}에 살고 있습니다.`,[
       ...(this.expat?[]:[{label:'한국으로 돌아가 모신다',sub:'일과 생활을 정리해야 함',eff:'관계↑ 소득↓?',w:.25,fn:()=>{this.st('rel',6);this.st('hap',-3);this.moveTo(this.birthRegion,null,`${J(who,'을','를')} 모시려고 {to}로 돌아왔습니다.`);if(this.job&&R()<.6)this.loseJob(null);}}]),
       {label:'간병비를 보내고 자주 연락한다',sub:'한 해 약 1,500만 원',eff:'자산↓',w:.5,fn:()=>{this.spendMoney('부모 간병',1500);this.st('hap',-2);this.log(`${J(who,'을','를')} 요양 시설에 모시고 간병비를 보냈습니다. 화상 통화를 자주 했습니다.`,'choice-ev');}},
       ...(sib?[{label:'한국의 형제에게 맡기고 비용을 보탠다',sub:'비용과 짐을 나눔',eff:'관계↓?',w:.4,fn:()=>{this.spendMoney('부모 간병',600);this.st('rel',-1);this.log(`한국의 형제들이 ${J(who,'을','를')} 돌보고, 나는 비용을 보탰습니다.`,'choice-ev');}}]:[])]);return;}
     this.choose(`${who}의 간병`,`${who}가 거동이 불편해지셨습니다. 누가 어떻게 돌볼까요?`,[
       {label:'직접 모신다',sub:'곁을 지키지만 몸과 마음이 지침',eff:'관계↑ 행복↓ 건강↓',w:this.old?.6:.3,fn:()=>{this.st('rel',6);this.st('hap',-5);this.st('hp',-4);this.log(`${who}를 직접 모시며 간병했습니다.`,'choice-ev');}},
       {label:'요양 시설에 모신다',sub:'한 해 약 1,500만 원',eff:'자산↓',w:this.old?.1:.4,fn:()=>{this.spendMoney('부모 간병',1500);this.log(`${who}를 요양 시설에 모셨습니다. 주말마다 찾아갑니다.`,'choice-ev');}},
-      ...((this.order>1||this.hasYounger)?[{label:'형제와 나눠 돌본다',sub:'비용과 시간을 나눔',eff:'관계↑',w:.4,fn:()=>{this.spendMoney('부모 간병',500);this.st('rel',2);this.log(`형제들과 번갈아 ${J(who,'을','를')} 돌봤습니다.`,'choice-ev');}}]:[])]);
+      ...(this.sibAlive().length?[{label:'형제와 나눠 돌본다',sub:'비용과 시간을 나눔',eff:'관계↑',w:.4,fn:()=>{this.spendMoney('부모 간병',500);this.st('rel',2);this.log(`형제들과 번갈아 ${J(who,'을','를')} 돌봤습니다.`,'choice-ev');}}]:[])]);
   }
   sickChoice(){
     this.ills=this.ills||[];const pool=[['고혈압',3],['당뇨',2],['허리 디스크',2],['위궤양',1],['관절염',2],['갑상선 질환',1]].filter(x=>!this.ills.includes(x[0]));if(!pool.length)return;
@@ -2140,14 +2163,91 @@ class Person{
     this.log(`${c.rg} ${c.d}에 ${money(c.pr)}짜리 ${J(kind,'을','를')} 마련했습니다.${loan>0?` 대출은 ${money(loan)}(집값의 ${Math.round(loan/c.pr*100)}%).`:''}`,'good',`생애 최초 내 집 마련까지 평균 7.9년 · 자가보유율 61.4% (2024)${this.year()>=2020?' · 40대 가구 평균 부채 1억 4,325만 원 (2025)':''} · 집값은 게임 설정`,['house24','hhAge25','game']);if(this.everOwnedBefore)this.logs[this.logs.length-1].stat=`대출 비율 ${Math.round(loan/c.pr*100)}% · 집값은 게임 설정`;this.everOwnedBefore=true;
     this.snap('내 집 마련',`${c.rg} ${c.d}에 집을 샀습니다.`);
   }
+
+  // ---- 형제자매: 출생 순위 + 그 시대 출산율로 형제 수를 정하고(게임 추정), 시대별로 다른 관계를 그림 ----
+  makeSibs(){
+    const E=this.E,C=SIBC[E.y]||SIBC[2026],sp=E.y>=1990?1:0;this.sibs=[];
+    let nOld=this.order-1;if(this.order>=3)while(R()<C[2]&&nOld<7)nOld++;
+    let g=0;for(let i=0;i<nOld;i++){g+=ri(1,3)+sp;this.sibs.push(this.mkSib(g));}
+    if(g&&this.momAge-g<18){this.momAge=Math.min(45,18+g);this.dadAge=Math.max(this.dadAge,this.momAge);}
+    let k=nOld+1,gy=0;while(this.sibs.length<8){if(R()>=C[Math.min(k,3)-1])break;const st=ri(1,3)+sp;if(this.momAge+gy+st>44)break;gy+=st;this.sibs.push(this.mkSib(-gy));k++;}
+    this.hasYounger=this.sibs.some(s=>s.gap<0);
+  }
+  mkSib(gap){
+    const E=this.E,sx=R()<E.male?'M':'F',by=E.y-gap;const given=pickGiven(NAMEKEY(by),sx,[this.given,...(this.sibs||[]).map(s=>s.given)],by);
+    const da=Math.floor(sampleDeath(sx,Math.max(0,gap))+(E.shift?E.shift[sx]:0));
+    const modern=E.y>=1990;const close=clamp(modern?(R()<.4?.82:R()<.5?.22:.55)+randn()*.08:.55+randn()*.15,0,1);
+    return{sex:sx,gap,given,alive:true,dAge:Math.max(gap+1,da),close};
+  }
+  sibRel(s){const M=this.sex==='M';return s.gap>0?(s.sex==='M'?(M?'형':'오빠'):(M?'누나':'언니')):(s.sex==='M'?'남동생':'여동생');}
+  sibL(s){return `${this.sibRel(s)} ${s.given}`;}
+  sibAlive(){return (this.sibs||[]).filter(s=>s.alive&&(s.gap>0||this.age>=-s.gap));}
+  sibSummary(){const c={};for(const s of this.sibs.filter(s=>s.gap>0)){const r=this.sibRel(s);c[r]=(c[r]||0)+1;}return Object.entries(c).map(([r,n])=>`${r} ${n}명`).join(', ');}
+  planSibs(){
+    const E=this.E,old=E.y<=1970,M=this.sex==='M';const S=this.sibs;if(!S.length)return;
+    const nm=s=>J(this.sibL(s),'이','가');
+    for(const s of S){
+      if(s.gap<0)this.at(-s.gap,()=>{this.log(`${nm(s)} 태어났습니다.`,'good');});
+      const myDa=s.dAge-s.gap;
+      if(myDa<110)this.at(Math.max(myDa,1,s.gap<0?-s.gap:0),()=>{if(!s.alive)return;s.alive=false;const age=this.age+s.gap;
+        if(age<5)this.log(`${nm(s)} 돌림병을 이기지 못하고 ${age<1?'돌도 되기 전에':'어린 나이에'} 세상을 떠났습니다.`,'bad',E.y<1990?'그 시절 다섯 살 이전 사망이 흔했음 · 생명표 바탕 게임 추정':'','game');
+        else{const cz=sampleCause(s.sex,age,E.y<1990,null).name;this.log(`${nm(s)} 향년 ${age}세로 세상을 떠났습니다. (${cz})`,'bad');this.st('hap',-6-Math.round(s.close*6));this.st('rel',-2);}});
+      // 결혼 → 조카
+      const mA=Math.round((E.marry?E.marry[s.sex][0]:28)+randn()*3),myW=mA-s.gap;
+      if(R()<(E.marry?E.marry[s.sex][1]:.8)&&myW>=6&&myW<70&&mA<s.dAge)this.at(myW,()=>{if(!s.alive||this.army)return;s.married=true;
+        this.log(`${nm(s)} 결혼했습니다.${this.age>=8&&this.age<=40&&s.close>.6&&R()<.3?' 결혼식에서 축가를 불렀습니다.':''}`);
+        if(R()<.75)this.at(this.age+ri(1,3),()=>{if(!s.alive)return;const t=s.sex==='M'?(M?(s.gap>0?'작은아빠':'큰아빠'):'고모'):(M?'외삼촌':'이모');this.nephew=(this.nephew||0)+1;this.log(this.nephew===1?`${this.sibL(s)}에게 아이가 생겼습니다. 첫 조카입니다. 이제 ${t}입니다.`:`${this.sibL(s)}에게 아이가 생겼습니다. 조카가 ${this.nephew}명이 됐습니다.`,'good');});});
+    }
+    // 어린 시절
+    this.at(ri(6,11),()=>{const L=this.sibAlive();if(!L.length)return;const s=L[ri(0,L.length-1)];const y=this.year();
+      const t=s.gap>0?(y<1990&&s.sex===this.sex?`${this.sibRel(s)}에게 물려받은 옷과 교과서로 학교에 다녔습니다.`:wpick([[`${J(this.sibL(s),'이','가')} 숙제를 봐 줬습니다.`,1],[`${J(this.sibL(s),'과','와')} 툭하면 싸우다 ${this.momDead?'아버지':'어머니'}께 함께 혼났습니다.`,1]]))
+        :(old&&this.order===1&&!M&&this.sibs.filter(x=>x.gap<0).length>=2?(this.momDead?'일찍 떠난 어머니 대신 동생들을 업어 키웠습니다.':'일하러 나간 어머니 대신 동생들을 업어 키웠습니다.'):y>=1995?`${J(this.sibL(s),'과','와')} 게임기를 두고 매일 다퉜습니다.`:`${J(this.sibL(s),'을','를')} 데리고 동네를 쏘다녔습니다.`);
+      this.log(t,'');});
+    const younger=S.filter(s=>s.gap<0),eldest=this.order===1;
+    // 옛 시대 맏이: 집에 돈 부치기, 동생 학비
+    if(old&&eldest&&younger.length){
+      if(!M&&this.q<=2&&younger.some(s=>s.sex==='M'))this.at(16,()=>{if(this.edu!=='middle')return;this.st('rel',3);this.st('hap',-3);for(const s of younger)s.close=Math.min(1,s.close+.1);
+        this.log('공장에 다니며 번 돈을 고향 집에 부쳤습니다. 남동생들 학비가 됐습니다.','',`1970년대 수출 공장 노동자의 상당수가 농촌 출신 10대·20대 여성 · 맏딸이 동생 학비를 대는 일이 흔했음 (게임 설정)`,'game');});
+      const s=younger[younger.length>1?ri(0,1):0];const at=19-s.gap;
+      if(R()<(M?.75:.5))this.at(at,()=>{if(s.alive&&!this.army&&(this.afterDone||this.married))this.sibTuition(s);});
+    }
+    // 옛 시대 동생: 맏이가 학비를 보태 줌
+    if(old&&!eldest){const e=S.filter(s=>s.gap>0).sort((a,b)=>b.gap-a.gap)[0];
+      if(e&&R()<.35)this.at(19,()=>{if(!e.alive||!['univ','seoul','top','med','college'].includes(this.edu||''))return;const v=Math.round((300+R()*500)/10)*10;this.cash+=v;e.close=Math.min(1,e.close+.15);
+        this.log(`큰${e.sex==='M'?(M?'형':'오빠'):(M?'누나':'언니')} ${J(e.given,'이','가')} 첫 등록금 ${money(v)}을 보태 줬습니다.`,'good','맏이가 동생 학비를 대던 시절 (게임 설정)','game');});}
+    // 빚 부탁
+    if(R()<(old?.3:.15)*(this.q<=2?1.3:1))this.at(ri(35,58),()=>{const L=this.sibAlive().filter(s=>this.age+s.gap>=28);if(L.length&&(this.afterDone||this.married))this.sibDebt(L[ri(0,L.length-1)]);});
+    // 요즘 형제: 아주 가깝거나, 거의 남남
+    if(E.y>=1980)this.at(ri(31,40),()=>{const L=this.sibAlive();if(!L.length)return;const s=L.sort((a,b)=>b.close-a.close)[R()<.5?0:L.length-1];
+      if(s.close>=.7){this.st('hap',3);this.log(wpick([[`${J(this.sibL(s),'과','와')} 둘이 여행을 다녀왔습니다. 친구보다 편한 사이입니다.`,1],[`${J(this.sibL(s),'과','와')} 거의 매일 메신저로 수다를 떱니다.`,1]]),'good');}
+      else if(s.close<.35)this.log(`${J(this.sibL(s),'과','와')}는 명절에나 얼굴을 봅니다. 그마저도 점점 뜸해졌습니다.`,'','2026년 추석에 따로 사는 가족을 만날 계획 63% · 20·30대는 52% (한국리서치)','chuseok26');
+      else this.log(`형제 단톡방에서 가끔 안부를 주고받습니다.`);});
+  }
+  sibTuition(s){
+    const M=this.sex==='M',v=Math.round(Math.max(800,Math.min(2500,this.cash*.5+600))/100)*100;
+    this.choose('동생 학비',`${J(this.sibL(s),'이','가')} 대학에 붙었습니다. 집에서는 맏${M?'아들':'딸'}인 내가 학비를 보태 주길 바랍니다. 모아 둔 돈 ${money(this.cash)}.`,[
+      {label:'등록금을 다 대 준다',sub:`약 ${money(v)} · 맏이의 몫`,eff:'관계↑ 자산↓',w:M?.5:.35,fn:()=>{this.spendMoney('동생 학비',v);s.close=Math.min(1,s.close+.25);s.owe=v;this.st('rel',4);this.log(`${this.sibL(s)}의 대학 등록금을 다 대 주었습니다.`,'choice-ev');
+        if(R()<.35)this.at(this.age+ri(8,15),()=>{if(s.alive&&this.alive&&s.owe){const b=Math.round(s.owe*1.2/10)*10;this.cash+=b;s.owe=0;this.log(`학비를 대 줬던 ${J(this.sibL(s),'이','가')} 자리를 잡고 그때 돈을 갚았습니다. ${money(b)}.`,'good');}});}},
+      {label:'형편껏 일부만 보탠다',sub:`약 ${money(Math.round(v*.35/10)*10)}`,eff:'관계↑',w:.4,fn:()=>{this.spendMoney('동생 학비',Math.round(v*.35/10)*10);s.close=Math.min(1,s.close+.1);this.log(`${this.sibL(s)}의 학비를 조금 보탰습니다.`,'choice-ev');}},
+      {label:'내 앞가림도 벅차다',sub:'부모님께 죄송한 마음',eff:'관계↓',w:.2,fn:()=>{s.close-=.2;this.st('rel',-3);this.st('hap',-2);this.log('학비를 보태지 못했습니다. 한동안 집에 전화하기가 어려웠습니다.','choice-ev');}}]);
+  }
+  sibDebt(s){
+    const d=Math.round((1500+R()*6000)*(this.E.y<=1970?.8:1)/100)*100;const why=wpick([['하던 가게가 문을 닫아',3],['사업이 기울어',2],['주식으로 큰돈을 잃어',this.year()>=1995?1:0],['보증을 잘못 서',1]]);
+    this.choose(`${this.sibL(s)}의 빚`,`${J(this.sibL(s),'이','가')} ${why} 빚 ${money(d)}에 쫓기고 있습니다. 도와 달라고 합니다. 모아 둔 돈 ${money(this.cash)}.`,[
+      {label:'빚을 갚아 준다',sub:this.cash>=d?'모아 둔 돈으로':'모자란 돈은 대출로',eff:'관계↑ 자산↓',w:this.E.y<=1970?.35:.2,fn:()=>{const c=Math.min(Math.max(this.cash,0),d);if(c>0)this.spendMoney('형제 빚',c);if(d>c)this.debt+=d-c;s.close=Math.min(1,s.close+.2);s.owe=d;this.st('hap',-3);this.log(`${this.sibL(s)}의 빚 ${money(d)}을 대신 갚아 주었습니다.`,'choice-ev');
+        if(R()<.25)this.at(this.age+ri(5,12),()=>{if(s.alive&&this.alive&&s.owe){this.cash+=s.owe*.6;s.owe=0;this.log(`${J(this.sibL(s),'이','가')} 형편이 나아져 갚아 준 빚의 일부를 돌려줬습니다.`,'good');}});}},
+      {label:'일부만 보탠다',sub:`약 ${money(Math.round(d*.3/10)*10)}`,eff:'자산↓',w:.45,fn:()=>{this.spendMoney('형제 빚',Math.round(d*.3/10)*10);this.log(`${this.sibL(s)}에게 ${money(Math.round(d*.3/10)*10)}을 보탰습니다.`,'choice-ev');}},
+      {label:'거절한다',sub:'내 가족부터',eff:'관계↓',w:.35,fn:()=>{s.close-=.35;this.st('rel',-3);this.log(s.close<.25?`거절했습니다. 그 뒤로 ${J(this.sibL(s),'과','와')} 연락이 끊겼습니다.`:'거절했습니다. 한동안 사이가 서먹했습니다.','choice-ev',s.close<.25?'2025년 무연고 사망자 7,004명 중 74.8%는 가족이 있었지만 시신 인수를 거부·기피 · 그 사유의 76%가 가족관계 단절':'',s.close<.25?'muyeon25':'');}}]);
+  }
   inherit(){
     if(!this.alive)return;
     const w=ERA_WEALTH[this.by]||1,q=this.q;
     if(q===1&&R()<.6)return;
     const med=[0,300,1000,3500,11000,40000][q]*w;const amt=med*Math.exp(randn()*.95-.25);
-    const sib=this.order===1?(this.hasYounger?2:1):this.order>=3?3:2;const share=amt/sib;
+    const live=this.sibAlive(),sib=live.length+1;const share=amt/sib;
     if(share<100)return;
-    this.cash+=share;this.log(`부모님께 ${money(share)}을 물려받았습니다.`,share>=10000?'good':'','상속 규모는 부모 소득 구간을 바탕으로 한 게임 설정','game');
+    this.cash+=share;this.log(`부모님께 ${money(share)}을 물려받았습니다.${sib>1?` 형제자매 ${sib}명이 나눈 몫입니다.`:''}`,share>=10000?'good':'','상속 규모는 부모 소득 구간을 바탕으로 한 게임 설정','game');
+    if(live.length&&share>=3000&&R()<.12){const s=live[ri(0,live.length-1)];s.close-=.35;this.st('rel',-4);this.log(`유산을 나누는 문제로 ${J(this.sibL(s),'과','와')} 크게 다퉜습니다.`,'bad','상속 다툼 확률은 게임 설정','game');}
   }
   expatReturn(){
     const x=this.expat;if(!x||!this.alive)return;
@@ -2646,23 +2746,24 @@ async function startFlow(){
 }
 function runReels(rand){
   const p=player,E=ERA;
-  const reels=[];
+  const reels=[];const tail=(ps,p)=>ps.reduce((t,x)=>t+(x<=p*1.0001?x:0),0);
   if(rand)reels.push(['시대',ERA_KEYS.map(k=>k+'년'),E.y+'년']);
-  if(rand){const tot=ERA_KEYS.reduce((s,k)=>s+ERAS[k].births,0);reels[0].push(`확률 ${pctTxt(E.births/tot)} · 다섯 시대의 출생아 수에 비례`,srcHtml(E.srcB,''));}
+  if(rand){const tot=ERA_KEYS.reduce((s,k)=>s+ERAS[k].births,0);reels[0].push(`확률 ${pctTxt(E.births/tot)} · 다섯 시대의 출생아 수에 비례`,srcHtml(E.srcB,''),tail(ERA_KEYS.map(k=>ERAS[k].births/tot),E.births/tot));}
   const pm=p.sex==='M'?E.male:1-E.male;
-  reels.push(['성별',['남자','여자'],p.sex==='M'?'남자':'여자',`확률 ${pctTxt(pm)}${SEXR[E.y]?` · 출생성비 ${SEXR[E.y]} (여아 100명당 남아)`:' · 그 시절 출생성비 추정'}`,srcHtml(SEXR_SRC[E.y]||'game','')]);
+  reels.push(['성별',['남자','여자'],p.sex==='M'?'남자':'여자',`확률 ${pctTxt(pm)}${SEXR[E.y]?` · 출생성비 ${SEXR[E.y]} (여아 100명당 남아)`:' · 그 시절 출생성비 추정'}`,srcHtml(SEXR_SRC[E.y]||'game',''),tail([pm,1-pm],pm)]);
   {const ds=sggShare(p.birthRegion,(SGG[p.birthRegion]||[]).some(x=>x[0]===p.birthDistrict)?p.birthDistrict:pickDist(p.birthRegion),ERA_ALPHA[E.y]||1);
-   reels.push(['태어난 곳',E.regions.map(r=>r[0]),`${p.birthRegion} ${p.birthDistrict}`,`확률 ${pctTxt(wshare(E.regions,p.birthRegion)*ds)} · 출생아 중 ${p.birthRegion} ${pctTxt(wshare(E.regions,p.birthRegion))} × ${p.birthRegion} 안에서 ${p.birthDistrict} ${pctTxt(ds)} (시군구 인구 비례${E.y<2026?', 과거는 농촌 비중 보정':''})`,srcHtml(regSrc(E,p.birthRegion),'')+' · '+srcHtml('pop24','')]);}
-  reels.push(['부모 소득',Object.values(QLAB),QLAB[p.q],'확률 20% · 소득 5분위는 가구를 소득순으로 다섯 등분한 구간',srcHtml('def','')]);
-  reels.push(['출생 순위',Object.values(ORDER_LAB),ORDER_LAB[p.order],`확률 ${pctTxt(wshare(E.order,p.order))} · 그해 출생아 중 ${ORDER_LAB[p.order]} 비율`,srcHtml(E.y===2026?'order25':'game','')]);
+   const al=ERA_ALPHA[E.y]||1,me=wshare(E.regions,p.birthRegion)*ds,all=[];for(const[rg]of E.regions){const rs=wshare(E.regions,rg);const L=SGG[rg];if(!L){all.push(rs);continue;}for(const[d]of L)all.push(rs*sggShare(rg,d,al));}const tl=tail(all,me);
+   reels.push(['태어난 곳',E.regions.map(r=>r[0]),`${p.birthRegion} ${p.birthDistrict}`,`확률 ${pctTxt(me)} · 시군구 단위로 쪼개면 대부분 1% 안팎 · ${tl<.05?`이보다 드문 곳에서 태어나는 아이는 모두 합쳐 ${pctTxt(tl)}뿐`:`출생아의 ${pctTxt(tl)}가 이보다 드문 곳에서 태어남 · 흔한 편`} · 출생아 중 ${p.birthRegion} ${pctTxt(wshare(E.regions,p.birthRegion))} × ${p.birthRegion} 안에서 ${p.birthDistrict} ${pctTxt(ds)} (시군구 인구 비례${E.y<2026?', 과거는 농촌 비중 보정':''})`,srcHtml(regSrc(E,p.birthRegion),'')+' · '+srcHtml('pop24',''),tl]);}
+  reels.push(['부모 소득',Object.values(QLAB),QLAB[p.q],'확률 20% · 소득 5분위는 가구를 소득순으로 다섯 등분한 구간',srcHtml('def',''),1]);
+  reels.push(['출생 순위',Object.values(ORDER_LAB),ORDER_LAB[p.order],`확률 ${pctTxt(wshare(E.order,p.order))} · 그해 출생아 중 ${ORDER_LAB[p.order]} 비율`,srcHtml(E.y===2026?'order25':'game',''),tail(E.order.map(o=>wshare(E.order,o[0])),wshare(E.order,p.order))]);
   $('#revEra').textContent=`${E.y}년 어느 날 · 그날 태어난 ${fmt(E.perDay)}명 중 한 명`;
   $('#revName').textContent='';$('#revName').classList.remove('show');$('#revPortrait').hidden=true;
   $('#liveBtn').disabled=true;$('#skipBtn').hidden=false;
   const box=$('#reels');
-  box.innerHTML=reels.map(([lab,opts,fin,st,sr],i)=>{
+  box.innerHTML=reels.map(([lab,opts,fin,st,sr,tl],i)=>{
     const n=14+i*5;const items=[];for(let j=0;j<n;j++)items.push(opts[ri(0,opts.length-1)]);items.push(fin);
-    const pr=st?parseFloat((st.match(/확률 ([\d.]+)%/)||[])[1]):NaN;
-    return `<div class="reel${pr<5?' rare':''}"><span class="rl">${lab}${pr<5?'<em class="rarebadge">희귀</em>':''}</span><div class="win"><div class="strip" data-n="${items.length}">${items.map(x=>`<span>${x}</span>`).join('')}</div></div>${st?`<p class="rs">${st}${sr?` · 출처 ${sr}`:''}</p>`:''}</div>`;
+    const rare=tl!=null&&tl<.05;
+    return `<div class="reel${rare?' rare':''}"><span class="rl">${lab}${rare?'<em class="rarebadge" title="이보다 드문 결과를 모두 합쳐도 5% 미만">희귀</em>':''}</span><div class="win"><div class="strip" data-n="${items.length}">${items.map(x=>`<span>${x}</span>`).join('')}</div></div>${st?`<p class="rs">${st}${sr?` · 출처 ${sr}`:''}</p>`:''}</div>`;
   }).join('');
   $('#bcard').innerHTML='';
   const strips=[...box.querySelectorAll('.strip')];
@@ -2671,7 +2772,7 @@ function runReels(rand){
     if(done)return;done=true;clearTimeout(revealTimer);
     strips.forEach(s=>{s.style.transition='none';s.style.transform=`translateY(-${(+s.dataset.n-1)*44}px)`;s.closest('.reel').classList.add('landed');});
     {const rp=$('#revPortrait');rp.hidden=false;drawPortrait(rp,lookOf(player,{mood:'happy'}),68);}
-    $('#revName').innerHTML=player.name+(player.nameRank?`<span class="revrank">${player.nameRank.text} · ${srcHtml(player.nameRank.src,'')}</span>`:'');$('#revName').classList.add('show');
+    $('#revName').innerHTML=player.name+`<span class="revrank">${player.nameRank.text} · ${srcHtml(player.nameRank.src,'')}</span><span class="revrank">${surnStat(player.name.slice(0,1))} · ${srcHtml('surn15','')}</span>`;$('#revName').classList.add('show');
     {const p=player,E=ERA,sx=p.sex,coh=cohort(E,sx);const now=E.y===2026;
      const rows=[
       ['어머니 나이',`${p.momAge}세`,now?'2025년 엄마 평균 출산 연령 33.8세':`이 시대 엄마 평균 출산 연령 약 ${E.mom}세`,now?'birthPre25':'game'],
@@ -2935,7 +3036,7 @@ function snapHtml(p){
    <div><span>사는 곳</span>${hn(p.region,p.district,p.alive?p.year():p.by+p.deathAt)} · ${p.home?'자가 '+money(p.homeVal):!(p.afterDone||p.married)?(p.army?'군 생활관':p.leftHome?'하숙·자취 (생활비는 부모님이)':'부모님 집'):p.housing==='shelter'?'쉼터·쪽방':'전월세'}</div>
    <div><span>하는 일</span>${p.status()}${p.payZ!=null&&p.job&&own>0&&!(p.retired&&!p.working)?` · 월 ${money(own)} (${topTxt(1-(p.payPct()))})`:''}</div>
    ${!(p.afterDone||p.married)?`<div><span>집안 형편</span>${WEALTH_W[p.q]} 집 · 부모 소득 ${QLAB[p.q]}</div>`:`<div><span>돈</span>현금 ${money(p.cash)} · 빚 ${money(p.debt+p.mort)} · 순자산 ${money(nw)}${(p.afterDone||p.married)?` (가구 ${topTxt(1-(nwPct(nw)))})`:''}</div>`}
-   <div><span>가족</span>${[p.momDead?'':`어머니 ${p.momAge+p.age}세`,p.dadDead?'':`아버지 ${p.dadAge+p.age}세`].filter(Boolean).join(' · ')}${p.order>1||p.hasYounger?' · 형제자매':''}${p.age>=18?' · ':''}${p.age<18?'':p.married&&p.spouse?`배우자 ${p.spouse.name} (${p.spouse.age0+(p.age-p.spouse.at)}세${p.spouse.job?' · '+p.spouse.job:''}${sp>0?' · 월 '+money(sp):''})`:p.divorced?'이혼':p.widowed?'사별':'미혼'}${kidsT?' · 자녀 '+kidsT:''}${p.grandCount?' · 손주 '+p.grandCount+'명':''}</div>
+   <div><span>가족</span>${[p.momDead?'':`어머니 ${p.momAge+p.age}세`,p.dadDead?'':`아버지 ${p.dadAge+p.age}세`].filter(Boolean).join(' · ')}${p.sibAlive&&p.sibAlive().length?` · 형제자매 ${p.sibAlive().length}명`:''}${p.age>=18?' · ':''}${p.age<18?'':p.married&&p.spouse?`배우자 ${p.spouse.name} (${p.spouse.age0+(p.age-p.spouse.at)}세${p.spouse.job?' · '+p.spouse.job:''}${sp>0?' · 월 '+money(sp):''})`:p.divorced?'이혼':p.widowed?'사별':'미혼'}${kidsT?' · 자녀 '+kidsT:''}${p.grandCount?' · 손주 '+p.grandCount+'명':''}</div>
    <div><span>몸과 마음</span>건강 ${Math.round(p.hp)} · 행복 ${Math.round(p.hap)} · 지식 ${Math.round(p.kn)} · 관계 ${Math.round(p.rel)}</div>
    <div><span>곁에 있는 것</span>${[p.pet?`${p.pet.kind} ${p.pet.name}`:'',p.friends.filter(x=>x.alive).map(x=>x.name).join(', ')].filter(Boolean).join(' · ')||'—'}</div>
    <div style="grid-column:1/-1"><span>최근 일</span><ul>${recent.map(e=>`<li>${e.age}세 · ${e.text}</li>`).join('')}</ul></div>

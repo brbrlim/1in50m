@@ -243,6 +243,22 @@ body.deciding{padding-bottom:62vh}
 .korsvg{width:100%;max-width:220px;height:auto;display:block;margin:0 auto;font-family:var(--f-mono);font-size:9px}
 .moneysvg{width:100%;height:auto;display:block;font-family:var(--f-mono);font-size:8px;fill:var(--muted)}
 .mcard.mwide{grid-column:1/-1}
+.crowd{display:grid;grid-template-columns:repeat(20,1fr);gap:3px;width:100%;max-width:300px;margin:6px auto}
+.crowd i{display:block}
+.crowd i{aspect-ratio:1;border-radius:50%;background:color-mix(in srgb,var(--muted) 22%,transparent)}
+.crowd i.on{background:var(--accent)}
+.ctxbox{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:16px}
+@media (min-width:640px){.ctxbox{display:grid;grid-template-columns:1fr 1fr;gap:18px 22px}.ctxbox>.label,.ctxbox>.pstrip{grid-column:1/-1}}
+.ctxc{display:flex;flex-direction:column;gap:6px}
+.ctxc .moneysvg{font-size:10.5px}
+.ctxc .secthead{flex-direction:column;align-items:flex-start;gap:2px}
+.pstrip{display:flex;flex-direction:column;gap:4px}
+.pst-h{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:13px}
+.pst-h span{color:var(--muted);font-variant-numeric:tabular-nums}
+.pst-bar{position:relative;height:10px;border-radius:999px;background:linear-gradient(90deg,color-mix(in srgb,var(--muted) 12%,transparent),color-mix(in srgb,var(--accent) 35%,transparent))}
+.pst-bar i{position:absolute;top:-4px;width:4px;height:18px;margin-left:-2px;border-radius:2px;background:var(--accent);box-shadow:0 0 0 2px var(--card)}
+.pst-mid{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--muted);opacity:.6}
+.pst-l{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted)}
 .mcard{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;min-width:0}
 .lgrid{display:grid;grid-template-columns:repeat(10,1fr);gap:3px}
 .lc{aspect-ratio:1;border-radius:3px;background:var(--line);display:flex;align-items:center;justify-content:center;font-size:8px;font-family:var(--f-mono);color:var(--ink);max-width:100%}
@@ -674,6 +690,13 @@ const SRC={
  cancerReg:['보건복지부 「2022년 국가암등록통계」','https://www.etoday.co.kr/news/view/2432379'],
  marry25:['국가데이터처 「2025년 혼인·이혼 통계」','https://biz.sbs.co.kr/amp/article/20000298493'],
  div25:['국가데이터처 「2025년 혼인·이혼 통계」','https://www.etoday.co.kr/news/view/2567119'],
+ div24:['통계청 「2024년 혼인·이혼 통계」 (이혼 91,151건 · 미성년 자녀 있는 이혼 3.9만 건)','https://www.newsis.com/view/NISX20250320_0003105950'],
+ dv25:['성평등가족부 「2025년 가정폭력 실태조사」 (지난 1년 배우자·파트너 폭력 5.9% · 평생 14.4%)','https://www.khan.co.kr/article/202607301346011/'],
+ child25:['보건복지부 「2025 아동학대 연차보고서」 (2024년 학대 판단 24,492건 · 2025년 23,648건)','https://supple.kr/news/cmtkxxlgv00gts6cw4d7b1nwo'],
+ sanjae24:['고용노동부 「2024년 산업재해 사고사망 현황」 (사고사망 589명)','https://www.ajunews.com/view/20250311135226452'],
+ sanjae26:['e-나라지표 「산업재해 현황」 (2026년 6월 말 재해율 0.32%)','https://www.index.go.kr/unify/idx-info.do?idxCd=1514'],
+ life24b:['국가데이터처 「2024년 생명표」 (80세 생존 남 64.4%·여 82.2% · 100세 생존 남 1.2%·여 4.8%)','https://www.newsis.com/view/NISX20251203_0003426271'],
+ cdr:['통계청 인구동향조사 조이혼율 추이 (2003년 3.4건 정점 · 2024년 1.8건)','https://www.newsis.com/view/NISX20250320_0003105950'],
  foreign25:['국가데이터처 「2025년 혼인·이혼 통계」','https://www.nocutnews.co.kr/news/6487592'],
  firstBirth:['국가데이터처 「2025년 혼인·이혼 통계」 브리핑','https://www.mt.co.kr/economy/2026/03/20/2026031915130297984'],
  tutor24:['교육부 「2024년 초중고 사교육비조사」','https://www.newsis.com/view/NISX20250314_0003099728'],
@@ -874,11 +897,88 @@ const PHOTO={
  잠실아파트:['Jamsil Siyoung Apartment 1978-07-02.png','1978년, 잠실 시영아파트','전민조 · 대한민국역사박물관','공공누리 제1유형'],
  학원가:['Hakwon street 1971-07-24.png','1971년, 서울 종로의 학원가','전민조 · 대한민국역사박물관','퍼블릭 도메인'],
  국민학교:['서울보래국민학교 수업시간.jpg','1963년, 서울 보래국민학교 수업 시간','서울특별시(서울사진아카이브)','퍼블릭 도메인'],
- 연탄:['Briquette burning.jpg','타고 있는 연탄','Salamander724','퍼블릭 도메인']};
-const PH_EVERYDAY=new Set(['국민학교','연탄','안내양','귀성','만원도시','소매치기','잠실아파트','학원가']);
+ 연탄:['Briquette burning.jpg','타고 있는 연탄','Salamander724','퍼블릭 도메인'],
+ 판자촌:['서울 도동 일대의 판자촌.jpg','1957년, 서울 도동 일대의 판자촌','한국정책방송원','공공누리 제1유형'],
+ 시내버스60:['1960년 3월 서울시내 한국상업은행 앞 거리와 시내버스.jpg','1960년 3월, 서울 시내 거리와 시내버스','한국저작권위원회','CC BY 4.0'],
+ TV방송:['중앙 TV 방송 광경 (1966.5.13).jpg','1966년 5월, 텔레비전 방송 광경','서울역사박물관','공공누리 제1유형'],
+ 청계고가:['Cheonggye overpass 1969 1.jpg','1969년, 서울 도심을 가로지르는 청계고가도로','국가기록원','공공누리 제1유형'],
+ 삼일빌딩:['Modernization 1969-12-14.png','1969년 12월, 공사 중인 31층 빌딩 아래서 낮잠 자는 노동자','전민조 · 대한민국역사박물관','퍼블릭 도메인'],
+ 광주대단지:['Gwangju housing complex 1971-07-05.png','1971년, 철거민이 옮겨 간 경기 광주대단지','전민조 · 대한민국역사박물관','퍼블릭 도메인'],
+ 새마을:['농촌 새마을 운동 지붕 개량 작업.jpg','1973년, 새마을운동 초가지붕 개량 작업','한국정책방송원','공공누리 제1유형'],
+ 명동75:['서울 명동거리 (1975년 8월).jpg','1975년 8월, 서울 명동 거리','한국저작권위원회','CC BY 4.0'],
+ 무단횡단:['Jaywalker 1975-10-18.png','1975년, 동대문 무단횡단 단속 현장','전민조 · 대한민국역사박물관','퍼블릭 도메인'],
+ 약장수:['Medicine hawker 1976.png','1976년, 강남고속버스터미널 끝자락의 약장수','전민조 · 대한민국역사박물관','퍼블릭 도메인'],
+ 정류장76:['Bus station 1976-03-24.png','1976년, 서울 잠실동 버스 정류장','전민조 · 대한민국역사박물관','퍼블릭 도메인'],
+ 포니:['Hyundai Pony The first independent production model of South Korean car.jpg','첫 국산 고유 모델 승용차 포니 (1976년 출시)','문화재청','공공누리 제1유형'],
+ 남대문시장:['추석 전날 남대문시장 거리 모습(1977).jpg','1977년, 추석 전날의 남대문시장','서울역사박물관','공공누리 제1유형'],
+ 압구정:['Apgujeong-dong 1978-04-20.png','1978년, 아파트 앞에서 소로 밭을 가는 압구정동 농부','전민조 · 대한민국역사박물관','공공누리 제1유형'],
+ 광화문80:['Traffic congestion 1980-05-14.png','1980년 5월, 광화문의 교통 체증','전민조 · 대한민국역사박물관','공공누리 제1유형'],
+ 시골길:['Country road 1984.png','1984년, 경북 안동의 시골길','전민조 · 대한민국역사박물관','공공누리 제1유형'],
+ 교련복:['South Korean high school drill uniform 교련복.jpg','고등학교 교련복','국립민속박물관','공공누리 제1유형'],
+ 이호선:['지하철 2호선 개통 (1983.12.17).jpg','1983년 12월, 지하철 2호선 개통','서울역사박물관','공공누리 제1유형'],
+ 주경기장:['잠실 종합운동장 주경기장 개장식 (1984.09.29).jpg','1984년 9월, 잠실 주경기장 개장식','서울역사박물관','공공누리 제1유형'],
+ 공중전화86:['공중전화기 (1986.05).jpg','1986년 제조 동전 공중전화기','국립민속박물관','공공누리 제1유형'],
+ 영도89:['1989년 부산 남항에서 바라본 영도 영선동 산자락 주거 모습.jpg','1989년, 부산 영도 산비탈 마을','한국저작권위원회','CC BY 4.0'],
+ 하이텔:['Hitel computer terminal.jpg','PC통신 하이텔 단말기','국립민속박물관','공공누리 제1유형'],
+ 공중전화94:['공중전화기 (1994.05).jpg','1994년 제조 카드 공중전화기','국립민속박물관','공공누리 제1유형'],
+ 삐삐:['Pagers.jpg','무선호출기(삐삐)','MohammedLombardia','CC0'],
+ 플로피:['Floppy disk 2009 G1.jpg','8인치·5.25인치·3.5인치 플로피 디스크','George Chernilevsky','퍼블릭 도메인'],
+ 자갈치:['1995년 부산 자갈치시장 수변.jpg','1995년, 부산 자갈치시장','한국저작권위원회','CC BY 4.0'],
+ 광화문96:['광화문 (1996.05).jpg','1996년 5월, 철거를 앞둔 옛 조선총독부 건물과 광화문','서울연구데이터서비스','CC BY 4.0'],
+ 선거벽보:['16대 국회의원 선거 벽보 01 (2000.04).jpg','2000년 4월, 종로3가의 국회의원 선거 벽보','서울연구데이터서비스','공공누리 제1유형'],
+ 남포동:['Food alley in Nampo-dong, Busan in 2003.jpg','2003년, 부산 남포동 먹자골목','부산광역시','공공누리 제1유형'],
+ 서울광장:['서울광장 (2009.08).jpg','2009년 8월, 서울광장','서울연구데이터서비스','CC BY 4.0'],
+ 수능응원:['2016년 대학수학능력시험 수험생 응원 01.jpg','2015년 11월, 수능 날 아침 수험생 응원','KBS 뷰','CC BY 3.0'],
+ 편의점도시락:['Convenience Store LunchBox 01.jpg','편의점 도시락','Korea.net (해외문화홍보원)','CC BY-SA 2.0'],
+ 폴더폰:['Samsung SCH-A100 (1999).jpg','1999년 무렵의 폴더형 휴대전화','textlad','CC0'],
+ 스타:['People playing StarCraft at PC Bang in 2001.jpg','2001년, PC방에서 스타크래프트를 하는 사람들','Alex C','CC BY 2.0'],
+ MP3:['Iriver iMP-550.jpg','CD·MP3 플레이어 (아이리버)','Wyglif','퍼블릭 도메인'],
+ 교통카드:['T-money card.jpg','티머니 교통카드','zisk','퍼블릭 도메인'],
+ 급식:['A South Korean school lunch.jpg','학교 급식 (2008년)','570cjk','CC BY-SA 3.0'],
+ 청계천:['Seoul-Cheonggyecheon-13.jpg','2005년 10월, 복원된 청계천','ddol-mang','CC BY-SA 2.0']};
+// 그 시절 물건·거리 풍경: [사진 키, [시작, 끝 연도], 나이 [최소, 최대], 조건, 문장]
+const NOST=[
+ ['판자촌',[1960,1969],[5,14],p=>p.region==='서울',p=>'산비탈 판자촌에 사는 친구네 집에 놀러 갔습니다. 수도가 없어 공동 우물에서 물을 길었습니다.'],
+ ['시내버스60',[1960,1967],[4,12],p=>CAPITAL.has(p.region),p=>'어머니 손을 잡고 시내버스를 타고 시내 구경을 갔습니다.'],
+ ['TV방송',[1966,1975],[5,15],p=>true,p=>p.year()<1972?'동네에 하나뿐인 텔레비전 있는 집에 모여 김일 선수의 프로레슬링 중계를 봤습니다.':'집에 처음 흑백 텔레비전이 들어왔습니다. 동네 아이들이 몰려왔습니다.'],
+ ['청계고가',[1969,1985],[6,40],p=>p.region==='서울',p=>'청계고가도로를 달리는 버스 창밖으로 서울 시내를 내려다봤습니다.'],
+ ['삼일빌딩',[1970,1972],[6,40],p=>p.region==='서울',p=>'청계천 옆에 31층짜리 빌딩이 올라갔습니다. 한동안 우리나라에서 가장 높은 건물이었습니다.'],
+ ['광주대단지',[1969,1972],[8,50],p=>(p.region==='서울'||p.region==='경기')&&p.q<=2,p=>'판자촌이 헐리고 이웃들이 경기 광주(지금의 성남)로 집단 이주해 갔습니다.'],
+ ['새마을',[1971,1979],[6,60],p=>!METRO.has(p.region)&&p.region!=='해외',p=>'마을 초가지붕을 슬레이트 지붕으로 바꾸는 새마을 사업에 온 동네가 나섰습니다.'],
+ ['명동75',[1972,1982],[16,30],p=>CAPITAL.has(p.region),p=>'주말에 명동에 나가 음악다방에서 DJ에게 신청곡 쪽지를 건넸습니다.'],
+ ['무단횡단',[1973,1980],[15,60],p=>METRO.has(p.region),p=>'무단횡단을 하다 단속반에 걸려 길가에 한참 서 있었습니다.'],
+ ['약장수',[1970,1986],[5,14],p=>true,p=>'장터 어귀에서 약장수 공연을 넋을 놓고 구경했습니다.'],
+ ['정류장76',[1974,1982],[10,50],p=>p.region==='서울',p=>(p.age<19?'등굣길':'출근길')+' 버스 정류장은 늘 사람으로 미어터졌습니다.'],
+ ['남대문시장',[1974,1985],[5,13],p=>p.region==='서울',p=>'추석을 앞두고 어머니를 따라 남대문시장에 장을 보러 갔습니다.'],
+ ['압구정',[1976,1983],[6,60],p=>p.region==='서울',p=>'강남에 아파트가 들어서면서 논밭이 하루가 다르게 사라졌습니다.'],
+ ['광화문80',[1979,1987],[20,60],p=>p.region==='서울'&&p.working2&&p.working2(),p=>'광화문 앞 출퇴근길은 차가 꽉 막혀 걸어가는 편이 빨랐습니다.'],
+ ['시골길',[1978,1992],[6,60],p=>!METRO.has(p.region)&&p.region!=='해외',p=>'흙먼지 날리는 시골길을 따라 버스가 하루 몇 번 다녔습니다.'],
+ ['교련복',[1969,1996],[16,17],p=>p.sex==='M'||p.year()>=1971,p=>'교련 시간에 교련복을 입고 운동장에서 제식 훈련을 받았습니다.'],
+ ['이호선',[1984,1990],[18,60],p=>p.region==='서울',p=>'새로 뚫린 지하철 2호선을 타고 다니기 시작했습니다.'],
+ ['주경기장',[1984,1988],[6,60],p=>p.region==='서울',p=>'잠실에 올림픽 주경기장이 문을 열었습니다. 동네가 온통 올림픽 이야기였습니다.'],
+ ['공중전화86',[1985,1995],[12,35],p=>p.region!=='해외',p=>'공중전화 앞에 줄을 서서 기다리다 동전을 넣고 친구에게 전화를 걸었습니다.'],
+ ['영도89',[1985,1996],[5,60],p=>p.region==='부산',p=>'산비탈 골목을 따라 집들이 다닥다닥 붙어 있었습니다. 계단을 오르내리는 게 일이었습니다.'],
+ ['하이텔',[1991,1999],[14,35],p=>p.kn>55,p=>'PC통신에 접속해 밤새 채팅을 했습니다. 다음 달 전화 요금 고지서를 보고 혼났습니다.'],
+ ['삐삐',[1993,1999],[15,40],p=>p.region!=='해외',p=>'삐삐에 찍힌 번호를 보고 공중전화로 달려갔습니다. 8282는 "빨리빨리"였습니다.'],
+ ['공중전화94',[1994,2000],[15,40],p=>p.region!=='해외',p=>'전화카드를 들고 다니며 공중전화로 음성 사서함을 확인했습니다.'],
+ ['플로피',[1990,2000],[12,45],p=>p.kn>50,p=>'과제를 3.5인치 디스켓에 저장해 들고 다녔습니다. 읽히지 않을 때가 많았습니다.'],
+ ['자갈치',[1990,2002],[6,60],p=>p.region==='부산',p=>'자갈치시장에서 회 한 접시를 놓고 가족과 둘러앉았습니다.'],
+ ['광화문96',[1995,1996],[8,70],p=>p.region==='서울',p=>'광화문 앞 옛 조선총독부 건물이 헐린다는 소식에 마지막 모습을 보러 갔습니다.'],
+ ['선거벽보',[1996,2008],[20,80],p=>p.region!=='해외',p=>'선거철이라 골목마다 후보들 벽보가 나란히 붙었습니다.'],
+ ['남포동',[2000,2010],[10,60],p=>p.region==='부산',p=>'남포동 먹자골목에서 친구들과 떡볶이와 어묵을 먹었습니다.'],
+ ['서울광장',[2004,2015],[10,70],p=>p.region==='서울',p=>'시청 앞이 잔디 광장으로 바뀌었습니다. 점심시간에 잔디밭에 앉아 쉬었습니다.'],
+ ['폴더폰',[1999,2008],[14,45],p=>p.region!=='해외',p=>'처음으로 내 휴대전화가 생겼습니다. 폴더를 탁 닫는 소리가 좋았습니다.'],
+ ['스타',[1999,2007],[12,30],p=>p.sex==='M'||R()<.4,p=>'PC방에서 친구들과 밤늦게까지 스타크래프트를 했습니다.'],
+ ['MP3',[2001,2009],[12,30],p=>true,p=>'MP3 플레이어에 좋아하는 노래를 가득 넣고 다녔습니다.'],
+ ['교통카드',[2004,2015],[8,18],p=>CAPITAL.has(p.region),p=>'교통카드를 처음 만들었습니다. 버스에 찍을 때 나는 "삑" 소리가 좋았습니다.'],
+ ['급식',[2003,2060],[7,17],p=>true,p=>'급식에 좋아하는 반찬이 나온 날이라 하루 종일 기분이 좋았습니다.'],
+ ['청계천',[2005,2012],[6,75],p=>p.region==='서울',p=>'고가도로가 헐린 자리에 청계천이 다시 흐르기 시작했습니다. 저녁마다 산책하는 사람들로 붐볐습니다.'],
+ ['편의점도시락',[2014,2060],[19,40],p=>(p.afterDone||p.student)&&!p.married,p=>'점심은 편의점 도시락으로 때우는 날이 많았습니다.']];
+
+const PH_EVERYDAY=new Set(['국민학교','연탄','안내양','귀성','만원도시','소매치기','잠실아파트','학원가',...NOST.map(x=>x[0]),'포니','수능응원']);
 const photoFor=t=>{for(const k in PHOTO)if(!PH_EVERYDAY.has(k)&&t.includes(k))return PHOTO[k];return null;};
 // 삶의 사건이 그 시절과 맞으면 당시 사진을 함께 보여 줌
-const PHOTO_HOOK=[[/재수|삼수|사수|학원/,[1962,1988],'학원가'],[/소매치기/,[1960,1990],'소매치기'],[/서울.{0,12}(올라왔|이사했|취직했)/,[1962,1990],'만원도시'],[/아파트을 마련|아파트를 마련/,[1975,1995],'잠실아파트'],[/안내양/,[1960,1990],'안내양'],[/귀성 열차표/,[1965,2000],'귀성']];
+const PHOTO_HOOK=[[/재수|삼수|사수|학원/,[1962,1988],'학원가'],[/소매치기/,[1960,1990],'소매치기'],[/서울.{0,12}(올라왔|이사했|취직했)/,[1962,1990],'만원도시'],[/아파트을 마련|아파트를 마련/,[1975,1995],'잠실아파트'],[/안내양/,[1960,1990],'안내양'],[/귀성 열차표/,[1965,2000],'귀성'],[/포니/,[1976,1990],'포니'],[/수능/,[2005,2025],'수능응원']];
 const photoUrl=(f,w=480)=>`https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(f)}?width=${w}`;
 const HIST=[
  [1960,'4·19 혁명이 일어났습니다.'],
@@ -1030,7 +1130,7 @@ const FORE={'암':'몸이 부쩍 야위고 소화가 잘 안 됩니다.','폐렴
 function sampleLifeAge(E,sex,q){
   if(R()<E.u5)return{age:R()<.6?R():1+R()*4};
   let d=E.u5?sampleDeath(sex,5):sampleDeath(sex);
-  if(d>40)d+=[-2.5,-1,0,1,2.5][q-1]+1.4+E.shift[sex];
+  if(d>40){const add=[-2.5,-1,0,1,2.5][q-1]+1.4+E.shift[sex];d+=add>0?add*clamp((102-d)/14,0,1):add;} // 85세 이후엔 가산 효과를 줄여 꼬리(100세 이상)가 생명표보다 두꺼워지지 않게
   {const h=trafHaz(E,sex);for(let a=1;a<d&&a<h.length;a++){if(!h[a])break;if(R()<h[a])return{age:a+R(),forced:'운수 사고'};}} // 1960~2025년 실제 교통사고 사망률
   return{age:d};
 }
@@ -1046,6 +1146,11 @@ function cohort(E,sex){const k=E.y+sex;if(COH[k])return COH[k];const n=20000,c=n
   return COH[k]={surv,mean:sum/n};}
 const survAt=(E,sex,a)=>cohort(E,sex).surv[clamp(Math.floor(a),0,111)];
 const sexKid=s=>s==='M'?'남자아이':'여자아이';
+// 조이혼율(인구 1,000명당 이혼 건수) 추이
+const CDR=[[1960,.3],[1970,.4],[1980,.6],[1990,1.1],[1995,1.5],[2000,2.5],[2003,3.4],[2005,2.6],[2010,2.3],[2015,2.1],[2020,2.1],[2024,1.8],[2060,1.7]];
+const cdrAt=y=>lerpT(CDR,y,1);
+// 한국 기대수명 추이 (생명표, 그해 태어난 아기 기준)
+const E0_HIST={M:[[1960,52.8],[1970,58.7],[1980,61.9],[1990,67.3],[2000,72.3],[2010,76.8],[2020,80.5],[2024,80.8]],F:[[1960,57.7],[1970,65.8],[1980,70.5],[1990,75.5],[2000,79.7],[2010,83.6],[2020,86.5],[2024,86.6]]};
 const TEMPER=['호기심이 많은','끈기가 강한','다정한','활발한','차분한','고집이 센'];
 const TALENT=['음악','운동','그림','수학','글쓰기','손재주','사람 사귀기'];
 const PETNAMES=['초코','보리','콩이','두부','몽이','나비','까미','코코','해피','마루','별이','구름'];
@@ -1110,7 +1215,7 @@ class Person{
   focusOf(){const sg=this.stage();if(!sg)return null;if(!this.focus[sg])this.focus[sg]=FOCUS[sg].opts[ri(0,3)][0];return this.focus[sg];}
   at(a,fn){(this.sched[a]=this.sched[a]||[]).push(fn);}
   // 건강 보너스로 늘어나는 수명은 90세가 넘으면 급격히 줄어듦 (생명표의 초고령 사망률이 매우 가파르기 때문)
-  shiftDeath(d){if(d<0){this.deathAge=Math.max(this.deathAge+d,this.age+.3);return;}const t0=this.tough?95:88,t1=this.tough?110:103;const f=this.deathAge<t0?1:clamp((t1-this.deathAge)/(t1-t0),0,1);this.deathAge=Math.min(this.deathAge+d*f,Math.max(this.deathAge,t1+R()*4));}
+  shiftDeath(d){if(d<0){this.deathAge=Math.max(this.deathAge+d,this.age+.3);return;}const t0=this.tough?93:85,t1=this.tough?108:100;const f=this.deathAge<t0?1:clamp((t1-this.deathAge)/(t1-t0),0,1);this.deathAge=Math.min(this.deathAge+d*f,Math.max(this.deathAge,t1+R()*2));}
   choose(title,desc,opts,extra){if(this.isPlayer&&!(extra&&extra.pause))this.lastChoiceAge=this.age;
     if(!this.isPlayer){if(extra&&extra.pause)return;const o=wpick(opts.map(o=>[o,o.w||1]));o.fn();return;}
     if(extra){this.queue.push(Object.assign({title,desc,opts},extra));return;}
@@ -1224,15 +1329,19 @@ class Person{
      if(mh>0&&mh<ma&&mh!==dh)this.at(mh,()=>{this.log('어머니 환갑잔치를 열어 드렸습니다.','good');this.scene('party','어머니 환갑잔치');});
      if(md>=75&&ma>=17){const c=ma-ri(1,2);this.at(c,()=>this.careChoice('어머니'));}
      if(fd>=75&&fa>=17&&fa!==ma)this.at(fa-1,()=>this.careChoice('아버지'));}
-    this.at(60,()=>{this.log('환갑을 맞았습니다.','mile');this.scene('party','환갑잔치');});
     this.at(65,()=>{
       if(this.inc<=2&&!this.home)this.log('연금만으로는 빠듯한 노후가 시작됐습니다.','bad','66세 이상 상대빈곤율 37.7% (2024) · OECD 회원국 중 최고','elderPov');
       else this.log(['서울','경기','인천','부산','대구','광주','대전'].includes(this.region)?'만 65세. 이제 지하철을 무료로 탑니다.':'만 65세. 경로 우대 대상이 되었습니다.','','65세까지 생존할 확률 남 88.9%·여 94.8% (2024 생명표)','life24');
     });
-    this.at(70,()=>{this.log('칠순을 맞았습니다.','mile');this.scene('party','칠순 잔치');});
-    this.at(80,()=>this.log('팔순을 맞았습니다.','mile',`80세까지 생존할 확률 남 64.4%·여 82.2% (2024 생명표)`,'life24'));
-    this.at(90,()=>this.log('구순을 맞았습니다.','mile'));
-    this.at(100,()=>this.log('백 번째 생일을 맞았습니다.','mile good',`100세 생존 확률 남 1.2%·여 4.8% (2024 생명표)`,'life24'));
+    // 장수 이정표마다 '같은 해 태어난 100명 중 몇 명이 아직 살아 있나'를 보여 줌
+    const crowd=(a,txt,tone)=>{const n=Math.max(0,Math.round(survAt(this.E,this.sex,a)*100));const tb={80:'남 64.4%·여 82.2%',100:'남 1.2%·여 4.8%'}[a];
+      this.log(`${txt} 같은 해 태어난 ${sexKid(this.sex)} 100명 중 ${n<1?'1명도 안 되는 사람만':n>=50?n+'명이':n+'명만'} 이 생일을 맞습니다.`,tone,`이 게임에서 ${this.E.y}년생 ${this.sex==='M'?'남자':'여자'} 2만 명 모의실험${tb?` · 2024년 생명표 ${a}세 생존 확률 ${tb}`:''}`,tb?['life24b','game']:'game');
+      if(this.isPlayer)this.fx.push({type:'crowd',title:`${a}세 · 같은 해 태어난 ${sexKid(this.sex)} 100명 중`,n,cap:`${n<1?'1명도 안 되는':n+'명'}이 아직 살아 있습니다`});};
+    this.at(60,()=>{crowd(60,'환갑을 맞았습니다.','mile');this.scene('party','환갑잔치');});
+    this.at(70,()=>{crowd(70,'칠순을 맞았습니다.','mile');this.scene('party','칠순 잔치');});
+    this.at(80,()=>crowd(80,'팔순을 맞았습니다.','mile'));
+    this.at(90,()=>crowd(90,'구순을 맞았습니다.','mile'));
+    this.at(100,()=>crowd(100,'백 번째 생일을 맞았습니다.','mile good'));
   }
   score(bonus=0){const se=this.sex==='M'?this.E.sexEdu/2:-this.E.sexEdu/2;const tb=(this.talent==='수학'||this.talent==='글쓰기'?.15:0)+(this.kn-68)*.032;return(tb+this.lat*.8+INC_EFF[this.q-1]+STUDY_EFF[this.study]+this.hsEff+se+bonus-.12)/.95;}
   tierOf(z){for(const[k,t]of this.E.thr)if(z>t)return k;return this.E.thr[this.E.thr.length-1][0];}
@@ -1630,7 +1739,7 @@ class Person{
       const b=wpick([[2,16.3],[7,17.3],[12,14],[17,13],[22,11.4],[27,10],[32,17.7]]);
       const da=this.age+Math.max(1,b+ri(-2,2));
       sp.divAt=da;this.at(da,()=>{if(this.married&&this.spouse===sp&&sp.divAt===da){this.married=false;this.divorced=true;this.scene('split','이혼');this.cash/=2;if(this.home&&R()<.5){this.cash+=(this.homeVal-this.mort)/2;this.home=false;this.homeVal=0;this.mort=0;this.housing='rent';this.log('집을 팔아 재산을 반으로 나눴습니다.','bad');}
-        this.log('이혼했습니다.','bad','이혼 부부의 평균 혼인 지속 기간 17.6년 (2025)','div25');
+        this.log('이혼했습니다.','bad',`이혼 부부의 평균 혼인 지속 기간 17.6년 (2025) · ${this.year()}년 조이혼율 인구 1,000명당 약 ${cdrAt(this.year()).toFixed(1)}건`,['div25','cdr']);
         if(R()<.25)this.at(this.age+ri(2,6),()=>{if(!this.married&&this.alive)this.propose(false);});}});
     }
     if(first)this.at(this.age+1,()=>this.kidsChoice());
@@ -1810,7 +1919,7 @@ class Person{
     if(f&&fx[f])fx[f]();
     ['hp','hap','kn','rel'].forEach(k=>this[k]=clamp(this[k],0,100));
     if(this.talent&&this.hobbyY>=6&&!this.used.skillUp&&['음악','그림','운동','손재주'].includes(this.talent)){this.used.skillUp=1;this.skill=true;this.log(`${this.talent} 실력이 수준급이 되었습니다.`,'good');}
-    if(a>=45)this.shiftDeath(clamp((this.hp-(79.6-(a-45)*.29))*.012,-.25,.25)); // 같은 나이 평균보다 건강하면 조금 더, 나쁘면 조금 덜 산다
+    if(a>=45)this.shiftDeath(clamp((this.hp-(79.6-(a-45)*.29))*.007,-.25,.12)); // 같은 나이 평균보다 건강하면 조금 더, 나쁘면 조금 덜 산다
     if(a===72&&this.rel<35&&!this.married)this.log('찾아오는 사람이 드물어 하루 종일 말할 일이 없는 날이 많습니다.','bad','관계가 낮으면 노년 건강이 더 빨리 나빠짐 (게임 설정)','game');
     if(this.married)this.marriedYears++;
     // 친구의 죽음
@@ -1845,7 +1954,7 @@ class Person{
     const lk=clamp(Math.exp(this.luck*.5),.25,4),indep=this.afterDone||this.married;
     if(indep&&a>=25&&a<=70&&R()<.004*lk&&!this.used.jackpot){this.used.jackpot=1;const g=Math.round((3000+R()*25000)/100)*100;this.cash+=g;this.led('투자 대박',g);this.log(`오래 들고 있던 주식이 크게 올라 ${money(g)}을 벌었습니다.`,'good','게임 설정','game');}
     {const kf=this.kn>80?.6:this.kn<50?1.5:1;if(indep&&a>=30&&a<=75&&this.cash>3000&&R()<.006/lk*kf&&!this.used.scam){this.used.scam=1;const l=this.cash*(.3+R()*.4);this.spendMoney('투자 사기',l);this.log(`지인이 권한 투자에서 ${money(l)}을 잃었습니다.`,'bad','게임 설정'+whyTxt([['지식',kf]]),'game');}}
-    this.tail(lk,indep);this.traffic(lk,indep);this.risks(lk,indep);this.marriageDrift();this.mindCheck();this.politics();this.poverty();this.rareLuck();
+    this.tail(lk,indep);this.traffic(lk,indep);this.risks(lk,indep);this.tragedy(lk,indep);this.nostalgia();this.marriageDrift();this.mindCheck();this.politics();this.poverty();this.rareLuck();
     if(this.payZ!=null&&this.working2())this.payZ+=randn()*.07;
     if(a>=20&&R()<.002*lk&&!this.used.lotto3){this.used.lotto3=1;if(indep){this.cash+=150;this.led('복권',150);}this.log('로또 3등에 당첨됐습니다. 약 150만 원.','good','3등 당첨 확률 약 35,724분의 1','math');}
   }
@@ -1900,6 +2009,7 @@ class Person{
     spend=Math.min(spend,Math.max(net*.6,net-pay+Math.max(0,this.cash))); // 빚 갚을 돈이 모자라면 먼저 씀씀이를 줄임
     this.cash+=net-spend-pay;this.led((own+sp)>0?'소득':'최저 생활 보전',net);this.led('생활비',-spend);if(pay>0)this.led('대출 상환',-pay);
     if((own+sp)>(this.bestPay||0)){this.bestPay=own+sp;this.bestPayAge=a;}
+    if(own>0&&this.payZ!=null&&this.working2()){const q=this.payPct();if(q>(this.bestPct||0)){this.bestPct=q;this.bestPctAge=a;this.bestOwn=own;}}
     if(this.cash>0){const c0=this.cash;this.cash*=1+.025+randn()*.06;this.led('예금·투자 수익',this.cash-c0);}
     if(this.cash<0)this.coverShortfall(-this.cash,own+sp,old);
     if(own>0){this.workYears++;this.paySum+=own;}
@@ -1978,8 +2088,63 @@ class Person{
     else if(!sp.divAt&&this.hap<38&&this.rel<45&&R()<.03){const da=this.age+ri(1,3);sp.divAt=da;this.log('부부 사이 대화가 거의 끊겼습니다.','bad','행복·관계가 낮으면 이혼 위험이 커짐 (게임 설정)','game');
       this.at(da,()=>{if(this.married&&this.spouse===sp&&sp.divAt===da){this.married=false;this.divorced=true;this.scene('split','이혼');this.cash/=2;this.log('이혼했습니다.','bad','이혼 부부의 평균 혼인 지속 기간 17.6년 (2025)','div25');}});}
   }
+  // 그 시절 물건·풍경: 플레이어에게 가끔 사진과 함께 (최소 4년 간격)
+  nostalgia(){
+    if(!this.isPlayer||!this.used||this.army)return;const a=this.age,y=this.year();
+    if(this.lastNost!=null&&a-this.lastNost<4)return;
+    const ok=NOST.filter(n=>!this.used['ns_'+n[0]]&&y>=n[1][0]&&y<=n[1][1]&&a>=n[2][0]&&a<=n[2][1]&&n[3](this));
+    if(!ok.length||R()>.3)return;const n=ok[ri(0,ok.length-1)];this.used['ns_'+n[0]]=1;this.lastNost=a;
+    const t=n[4](this);this.fx.push({type:'photo',ph:PHOTO[n[0]],caption:t.length>34?t.slice(0,33)+'…':t});
+    this.log(t,'',`그 시절 풍경 · 사진: ${PHOTO[n[0]][1]}`,'');this.used['ph_'+n[0]]=1;
+  }
+  divorceNow(sp,why){
+    if(!this.married||this.spouse!==sp)return;this.married=false;this.divorced=true;sp.divAt=null;if(this.isPlayer)this.scene('split','이혼');this.cash/=2;
+    if(this.home&&R()<.5){this.cash+=(this.homeVal-this.mort)/2;this.home=false;this.homeVal=0;this.mort=0;this.housing='rent';this.log('집을 팔아 재산을 반으로 나눴습니다.','bad');}
+    const y=this.year();
+    this.log(why||'이혼했습니다.','bad',`${y}년 조이혼율 인구 1,000명당 약 ${cdrAt(y).toFixed(1)}건 · 2024년 이혼 91,151건 중 20년 넘게 함께한 부부가 36%`,['div24','cdr']);
+  }
+  // 비극적인 일들: 실태조사·행정통계의 빈도를 바탕으로, 묘사는 절제해서
+  tragedy(lk,indep){
+    const a=this.age,y=this.year(),ab=this.region==='해외',M=this.sex==='M';
+    // 1) 어린 시절 부모의 이혼 (그해 조이혼율에 비례)
+    if(a>=2&&a<=17&&!this.parDiv&&!this.momDead&&!this.dadDead){const c=cdrAt(y),pp=.0085*c/1.8*(this.q<=1?1.3:this.q>=5?.75:1);
+      if(R()<pp){this.parDiv=true;this.st('hap',-7);this.st('rel',-2);const mom=R()<.75;const dq=this.q>1&&R()<.5;if(dq)this.q--;
+        this.log(`부모님이 이혼하셨습니다. ${mom?'어머니':'아버지'}와 살게 됐습니다.${dq?' 살림이 한결 빠듯해졌습니다.':''}`,'bad',`${y}년 조이혼율 인구 1,000명당 약 ${c.toFixed(1)}건 · 2024년 미성년 자녀를 둔 부부의 이혼 약 3만 9천 건 · 아이가 겪을 확률은 이를 바탕으로 한 게임 추정`,['cdr','div24','game']);}}
+    // 2) 아동학대 (발견된 사례 기준 연간 약 0.36%, 실제는 더 많을 수 있음)
+    if(a>=1&&a<=17&&!this.abused){const pp=.0026*(this.q<=1?1.6:this.q>=4?.7:1)*(this.parDiv?1.5:1)/Math.pow(lk,.3);
+      if(R()<pp){this.abused=1;this.st('hap',-10);this.st('rel',-4);this.st('hp',-3);
+        const st=`2024년 아동학대 판단 24,492건 · 아동 1,000명당 약 3.6명 · 2025년 가해자의 85.3%가 부모${this.q<=1?' · 가정 형편이 어려울수록 위험↑':''}${this.parDiv?' · 부모의 이혼 뒤 위험↑':''} · 신고 112`;
+        const txt=y<2000?'집에서 "사랑의 매"라는 말로 넘기기엔 지나친 매질이 잦았습니다. 그 시절엔 누구도 신고하지 않았습니다.':y<2014?'집에서 심하게 맞거나 끼니를 거르는 날이 이어졌습니다.':'집에서 심하게 맞거나 방치되는 날이 이어졌습니다.';
+        this.log(txt,'bad',st,'child25');
+        if(a>=9)this.choose('집이 무섭습니다','집에 들어가기가 두렵습니다.',[
+          {label:'믿을 만한 어른에게 털어놓는다',sub:y>=2014?'2014년부터 교사는 아동학대 신고 의무자 · 신고 112':'선생님이나 친척 어른에게',eff:'행복↑ 관계↑',w:.35,fn:()=>{const ok=R()<(y>=2014?.75:.45);this.st('hap',ok?5:-2);this.st('rel',ok?3:0);this.log(ok?(y>=2014?'선생님의 신고로 아동보호전문기관이 개입했습니다. 상황이 조금씩 나아졌습니다.':'친척 어른이 나서 주셨습니다. 매질이 멈췄습니다.'):'털어놓았지만 달라진 건 없었습니다.','choice-ev');if(!ok)this.abused=2;}},
+          {label:'혼자 참는다',sub:'',eff:'행복↓',w:.65,fn:()=>{this.st('hap',-6);this.abused=2;this.log('아무에게도 말하지 못했습니다.','choice-ev');}}]);
+        else if(y>=2014&&R()<.6){this.log('이웃의 신고로 아동보호전문기관이 개입했습니다.','','아동학대 신고 112 · 2014년 「아동학대처벌법」 시행','child25');}}}
+    // 3) 배우자의 폭력 (2025 실태조사: 지난 1년 배우자·파트너 폭력 5.9%, 그중 신체 폭력까지 간 경우만 게임에 등장)
+    const sp=this.spouse;
+    if(this.married&&sp&&a>=20&&!ab){
+      if(sp.dv===2&&R()<.3){this.st('hap',-5);this.st('hp',-3);sp.dvN=(sp.dvN||1)+1;this.log('배우자의 폭력이 또 반복됐습니다.','bad','가정폭력은 반복되는 경우가 많음 · 도움: 112, 여성긴급전화 1366(24시간)','dv25');if(sp.dvN>=3&&!sp.dvAsk2){sp.dvAsk2=1;this.dvChoice(sp,true);}}
+      else if(!sp.dv){const tf=['다정한','차분한','성실한'].includes(sp.trait)?.5:['고집이 센','무심한'].includes(sp.trait)?1.6:1;
+        const money=(this.debt>0&&!this.working2())||this.cash<0?1.5:1;const pp=(M?.0008:.0016)*tf*money*(y<2000?1.4:1);
+        if(R()<pp){sp.dv=1;this.st('hap',-10);this.st('hp',-4);this.log('말다툼 끝에 배우자가 물건을 던지고 끝내 손찌검을 했습니다.','bad',`2025년 가정폭력 실태조사: 지난 1년 배우자·파트너 폭력(신체·성·경제·정서) 경험 5.9% · 평생 14.4% · 피해 뒤 68.5%는 아무 대응도 하지 못함${whyTxt([['배우자 성격',tf],['돈 문제',money]])} · 신체 폭력 빈도는 게임 설정 · 도움: 112, 여성긴급전화 1366(24시간)`,['dv25','game']);this.dvChoice(sp,false);}}}
+    // 4) 산업재해 (2024년 사고사망 589명 · 재해율 약 0.6%대)
+    if(this.working2()&&a>=18&&a<=69&&!ab){const jf={irregular:1.7,sme:1.3,owner:.7,startup:.4,bigco:.6,public:.35,pro:.15,doctor:.15,instructor:.3,artist:.6,politician:.05,founderBig:.2}[this.job]??.5;
+      const era=y<1980?4:y<1990?2.8:y<2000?1.6:y<2010?1.1:1,mf=M?1.5:.6;
+      if(R()<.000045*jf*era*mf&&this.deathAge>this.age+1){this.deathAge=this.age+.2+R()*.6;this.forced='업무상 사고';this.log('일터에서 큰 사고가 났습니다.','bad',`2024년 업무상 사고 사망 589명 · 그중 건설업 절반 가까이 · 과거엔 몇 배 더 많았음${whyTxt([['일자리',jf],['시대',era],[M?'남성':'여성',mf]])} · 배율은 게임 설정`,['sanjae24','game']);}
+      else if(R()<.0062*jf*era*mf){const sev=R()<.25;this.st('hp',sev?-15:-6);
+        const how=this.job==='owner'?'가게 주방에서 일하다 크게 데었습니다':['irregular','sme'].includes(this.job)?wpick([['작업 중 기계에 손을 다쳤습니다',1],['무거운 짐을 옮기다 허리를 다쳤습니다',1.2],['작업대에서 떨어져 다리를 다쳤습니다',.8]]):'일터 계단에서 넘어져 발목을 다쳤습니다';
+        this.log(`${how}. ${sev?'석 달 넘게 일을 쉬었습니다.':'몇 주를 쉬었습니다.'} 산재 보상을 받았습니다.`,'bad',`일하는 사람 1,000명 중 한 해 6명꼴로 산업재해 (2026년 상반기 재해율 0.32%) · 휴업급여는 평균임금의 70%${whyTxt([['일자리',jf],['시대',era],[M?'남성':'여성',mf]])} · 배율은 게임 설정`,['sanjae26','game']);
+        if(this.isPlayer&&sev)this.scene('hospital','산업재해');}}
+  }
+  dvChoice(sp,again){
+    this.choose(again?'폭력이 계속되고 있습니다':'배우자에게 폭력을 당했습니다',again?'몇 번째인지 셀 수도 없습니다. 이번엔 어떻게 할까요?':'처음이 아닐지도 모릅니다. 어떻게 할까요? (도움: 112 · 여성긴급전화 1366, 24시간)',[
+      {label:'112·1366에 도움을 요청한다',sub:'상담·보호시설·접근금지 명령',eff:'안전↑',w:again?.35:.2,fn:()=>{this.st('hap',-2);this.st('rel',3);sp.dv=3;this.log('상담소의 도움을 받아 접근금지 명령을 받았습니다.','choice-ev','가정폭력 피해자 80.9%는 어디에도 도움을 청하지 않음 (2025)','dv25');
+        if(R()<.75)this.at(this.age+1,()=>this.divorceNow(sp,'소송 끝에 이혼했습니다.'));}},
+      {label:'집을 나와 이혼을 준비한다',sub:'별거 후 이혼',eff:'행복↓ 뒤 회복',w:again?.25:.12,fn:()=>{sp.dv=3;this.st('hap',-3);this.log('짐을 싸서 집을 나왔습니다.','choice-ev');this.at(this.age+1,()=>this.divorceNow(sp,'별거 끝에 이혼했습니다.'));}},
+      {label:'참고 산다',sub:'아이들 때문에, 체면 때문에 · 피해자의 68.5%가 이렇게 함',eff:'행복↓↓ 건강↓',w:again?.4:.68,fn:()=>{sp.dv=2;this.st('hap',-6);this.st('hp',-2);this.log('아무에게도 말하지 않고 참기로 했습니다.','choice-ev');}}]);
+  }
   mindCheck(){
-    const a=this.age;if(a<15||this.used.depr||this.hap>=32||R()>.2)return;this.used.depr=1;
+    const a=this.age;const scar=this.abused===2||(this.spouse&&this.spouse.dv===2);if(a<15||this.used.depr||this.hap>=(scar?40:32)||R()>(scar?.35:.2))return;this.used.depr=1;
     const st='우울감이 2주 이상 이어지면 진료가 권장됨 · 행복이 낮게 이어질수록 확률↑ (게임 설정)';
     this.log('한동안 아무것도 하기 싫고 잠을 못 자는 날이 이어졌습니다.','bad',st,'game');
     this.choose('마음이 많이 지쳤습니다','몇 달째 기분이 가라앉아 있습니다.',[
@@ -2528,6 +2693,58 @@ function renderMap(p){
 }
 // 순자산·소득 곡선 (2024년 실질 가치) · 점은 2025년 가구주 연령대별 평균 순자산
 const NW_AGE=[[32,21950],[45,48389],[55,55161],[67,53591]];
+// 같은 해 태어난 사람들의 수명 분포 위에 이 삶을 표시
+function lifeCtx(p){
+  const E=ERA,sx=p.sex,surv=cohort(E,sx).surv,d=p.deathAt,e0=E.e0[sx],now=E0_HIST[sx][E0_HIST[sx].length-1][1];
+  const den=[];for(let a=0;a<=105;a++)den.push(Math.max(0,surv[a]-(surv[a+1]??0)));
+  const sm=den.map((v,i)=>i<1?v:((den[i-1]??v)+v*2+(den[i+1]??v))/4);
+  const W=420,H=150,L=6,R2=6,T=46,B=16,px=a=>L+a/105*(W-L-R2),bw=(W-L-R2)/105;
+  const ymax=Math.max(...sm.slice(1))*1.08,py=v=>T+(1-Math.min(v,ymax)/ymax)*(H-T-B);
+  let bars='';for(let a=1;a<=104;a++){const c=a===d?'var(--accent)':a<d?'color-mix(in srgb,var(--muted) 55%,transparent)':'color-mix(in srgb,var(--muted) 22%,transparent)';bars+=`<rect x="${px(a).toFixed(1)}" y="${py(sm[a]).toFixed(1)}" width="${(bw-.5).toFixed(2)}" height="${(H-B-py(sm[a])).toFixed(1)}" fill="${c}"/>`;}
+  const marks=[[d,`이 삶 ${d}세`,'','var(--accent)'],[e0,`태어난 해 기대수명 ${e0}`,'4 2','var(--muted)'],[now,`2024년 기대수명 ${now}`,'1 2','var(--muted)']].filter((m,i)=>i<2||Math.abs(e0-now)>.05);
+  let lab='';marks.forEach((m,r)=>{const x=px(m[0]);const anc=x>W-90?'end':x<90?'start':'middle';const ty=11+r*13;
+    lab+=`<line x1="${x}" x2="${x}" y1="${ty+3}" y2="${H-B}" stroke="${m[3]}" stroke-width="${m[2]?1:1.6}" ${m[2]?`stroke-dasharray="${m[2]}"`:''}/><text x="${x+(anc==='end'?-3:anc==='start'?3:0)}" y="${ty}" text-anchor="${anc}" fill="${m[3]}" style="font-weight:${m[2]?400:700}">${m[1]}</text>`;});
+  const ticks=[0,20,40,60,80,100].map(a=>`<text x="${px(a)}" y="${H-4}" text-anchor="middle">${a}</text>`).join('');
+  const sv=survAt(E,sx,d+1),before=Math.round((1-sv)*100),after=100-before;
+  const u5=E.u5?` 다섯 살이 되기 전에 떠나는 아이가 ${Math.round(E.u5*100)}명꼴이던 시절입니다.`:'';
+  return `<div class="ctxc"><div class="secthead"><h3>얼마나 오래 산 걸까</h3><span class="fine">${E.y}년생 ${sx==='M'?'남자':'여자'} 2만 명 모의실험 · 1살 단위</span></div>
+   <svg class="moneysvg" viewBox="0 0 ${W} ${H}" role="img" aria-label="같은 해 태어난 사람들의 수명 분포와 이 삶의 위치">${bars}${lab}${ticks}</svg>
+   <p class="fine">같은 해 태어난 ${sexKid(sx)} 100명 중 <b>${before}명</b>은 이 사람보다 먼저 떠나고 <b>${after}명</b>은 더 오래 삽니다.${u5} 진한 막대 = 먼저 떠난 사람, 연한 막대 = 더 오래 사는 사람.</p></div>`;
+}
+// 한국 기대수명이 시대에 따라 어떻게 늘었는지와 이 삶
+function e0Ctx(p){
+  const sx=p.sex,by=ERA.y,dy=by+p.deathAt,H0=E0_HIST[sx],y0=Math.min(1960,by),y1=Math.max(2030,dy+3);
+  const W=420,H=130,L=28,R2=10,T=16,B=18,px=y=>L+(y-y0)/(y1-y0)*(W-L-R2),vmin=Math.min(40,p.deathAt-5),vmax=Math.max(95,p.deathAt+5),py=v=>T+(1-(v-vmin)/(vmax-vmin))*(H-T-B);
+  const line=H0.map((q,i)=>`${i?'L':'M'}${px(q[0]).toFixed(1)},${py(q[1]).toFixed(1)}`).join('');
+  const last=H0[H0.length-1],e0b=lerpT(H0,by,1),e0d=lerpT(H0,Math.min(dy,2024),1);
+  const yt=[1960,1980,2000,2020,2040,2060,2080,2100,2120].filter(y=>y>=y0&&y<=y1&&(y1-y0<90||y%40===0));
+  const vt=[50,60,70,80,90,100].filter(v=>v>=vmin&&v<=vmax);
+  const svg=`<svg class="moneysvg" viewBox="0 0 ${W} ${H}" role="img" aria-label="한국 기대수명 추이와 이 삶">
+   ${vt.map(v=>`<line x1="${L}" x2="${W-R2}" y1="${py(v)}" y2="${py(v)}" stroke="var(--line)" stroke-width=".6"/><text x="${L-4}" y="${py(v)+3}" text-anchor="end">${v}</text>`).join('')}
+   ${yt.map(y=>`<text x="${px(y)}" y="${H-4}" text-anchor="middle">${y}</text>`).join('')}
+   <rect x="${px(by)}" y="${py(p.deathAt)-1}" width="${Math.max(1,px(dy)-px(by))}" height="2" fill="color-mix(in srgb,var(--accent) 35%,transparent)"/>
+   <path d="${line}" fill="none" stroke="var(--muted)" stroke-width="1.6"/>
+   <path d="M${px(last[0])},${py(last[1])}L${px(y1)},${py(last[1])}" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2 3"/>
+   <circle cx="${px(by)}" cy="${py(e0b)}" r="3" fill="var(--card)" stroke="var(--muted)" stroke-width="1.4"/>
+   <circle cx="${px(dy)}" cy="${py(p.deathAt)}" r="3.6" fill="var(--accent)"/>
+   <text x="${px(dy)+(px(dy)>W-120?-6:6)}" y="${py(p.deathAt)-6}" text-anchor="${px(dy)>W-120?'end':'start'}" fill="var(--accent)" style="font-weight:700">${dy}년 향년 ${p.deathAt}세</text>
+   <text x="${px(by)+6}" y="${py(e0b)+12}">${by}년 ${e0b.toFixed(1)}세</text></svg>`;
+  return `<div class="ctxc"><div class="secthead"><h3>그 시절 한국의 기대수명</h3><span class="fine">${sx==='M'?'남자':'여자'} · 그해 태어난 아기가 평균 몇 살까지 사는지</span></div>${svg}
+   <p class="fine">${by}년에 태어난 ${sx==='M'?'남자':'여자'}아기의 기대수명은 ${e0b.toFixed(1)}세였고, ${dy<=2024?`이 사람이 떠난 ${dy}년에는 ${e0d.toFixed(1)}세로 늘었습니다.`:`가장 최근 생명표(2024)로는 ${last[1]}세입니다. 그 뒤(점선)는 아직 통계가 없습니다.`} 회색 선 = 생명표 기대수명 · 파란 띠 = 이 사람이 산 기간 · 출처 ${srcHtml(['le70','life24b'],'')}</p></div>`;
+}
+// 0~100 분위 막대: 이 사람이 분포의 어디쯤인지
+function pctStrip(title,rank,val,note){
+  rank=clamp(rank,0,1);return `<div class="pstrip"><div class="pst-h"><b>${title}</b><span>${val} · <b>${topTxt(1-rank)}</b></span></div>
+   <div class="pst-bar" role="img" aria-label="${title} ${topTxt(1-rank)}"><span class="pst-mid"></span><i style="left:${(rank*100).toFixed(1)}%"></i></div>
+   <div class="pst-l"><span>하위</span><span>중간</span><span>상위</span></div><p class="fine">${note}</p></div>`;
+}
+function ctxBox(p){
+  if(p.deathAt<1)return '';
+  const strips=[];
+  if(p.afterDone||p.married)strips.push(pctStrip('남긴 순자산',nwPct(p.netWorth()),money(p.netWorth()),`2025년 가구 순자산 분포에서의 위치 · 출처 ${srcHtml('hhAge25','')}`));
+  if(p.bestPct)strips.push(pctStrip('가장 잘 벌던 때 본인 소득',p.bestPct,`${p.bestPctAge}세 월 ${money(p.bestOwn)}`,`2024년 임금 근로자 월 임금 분포 기준(2024년 가치) · 출처 ${srcHtml('wage24','')}`));
+  return `<div class="ctxbox"><span class="label">숫자의 맥락</span>${lifeCtx(p)}${e0Ctx(p)}${strips.join('')}</div>`;
+}
 function moneyCard(p){
   const mh=p.mh||[];const ages=[];for(let a=0;a<mh.length;a++)if(mh[a])ages.push(a);
   if(ages.length<2)return `<div class="mcard mwide"><div class="secthead"><h3>돈의 흐름</h3><span class="fine">사회에 나오면 그리기 시작합니다</span></div><p class="fine">첫 일자리를 얻거나 결혼하면 해마다 순자산·빚·가구 월 소득을 곡선으로 기록하고, 2025년 연령대별 평균 순자산과 비교합니다. 지금은 부모님 소득 ${QLAB[p.q]} 구간의 집에서 자라는 중입니다.</p></div>`;
@@ -2659,6 +2876,13 @@ async function playFx(){
       const ctx=cv.getContext('2d');const sd=RM.matches?0:1700/sp;let fr=0;
       await animate(sd,k=>{const n=Math.floor(k*sd/220);if(n!==fr){fr=n;ctx.clearRect(0,0,cv.width,cv.height);sceneDraw(ctx,f.kind,fr,player,8);}});
       await sleep(RM.matches?700:250/sp);el.classList.add('out');await sleep(RM.matches?0:300);box.innerHTML='';continue;
+    }
+    if(f.type==='crowd'){
+      el.innerHTML=`<p class="fx-t">${f.title}</p><div class="crowd">${Array.from({length:100},(_,i)=>`<i class="${i<f.n?'on':''}"></i>`).join('')}</div><p class="fx-r"></p><p class="fx-src">진한 점 = 아직 살아 있는 사람 · 게임 모의실험</p>`;
+      const dots=[...el.querySelectorAll('.crowd i')];dots.forEach(d=>d.classList.remove('on'));
+      await animate(dur,k=>{const m=Math.round(k*f.n);dots.forEach((d,i)=>d.classList.toggle('on',i<m));});dots.forEach((d,i)=>d.classList.toggle('on',i<f.n));
+      const r=el.querySelector('.fx-r');r.textContent=f.cap;r.className='fx-r pop';
+      await sleep(hold);el.classList.add('out');await sleep(RM.matches?0:300);box.innerHTML='';continue;
     }
     if(f.type==='gauge'){
       el.innerHTML=`<p class="fx-t">${f.title}</p><div class="gauge"><div class="gz ok" style="width:${f.p*100}%"></div><div class="gz no"></div><div class="needle"></div></div><div class="fx-lab"><span>${f.okLab} ${Math.round(f.p*100)}%</span><span>${Math.round((1-f.p)*100)}%</span></div><p class="fx-r"></p><p class="fx-src">확률 ${srcHtml(f.src)}</p>`;
@@ -2837,7 +3061,7 @@ function endGame2(){
       <p>향년 ${p.deathAt}세 · 사인 ${p.cause}</p>
       <p class="narr">${lifeSummary(p)}</p>
       ${p.deathAt>=20?grainHtml(p):''}
-      <p class="fine" style="max-width:520px">같은 해 태어난 ${sexKid(p.sex)} 중 약 ${Math.round(sv*100)}%가 이 삶보다 오래 삽니다. 그해 생명표의 기대수명 ${e0}세보다 ${Math.abs(p.deathAt-e0).toFixed(1)}년 ${p.deathAt>=e0?'더':'덜'} 살았습니다. 이 게임에서 같은 해 태어난 사람의 평균 수명은 ${coh.toFixed(1)}세입니다.</p>
+      <p class="fine" style="max-width:520px">태어난 해 생명표의 기대수명 ${e0}세보다 ${Math.abs(p.deathAt-e0).toFixed(1)}년 ${p.deathAt>=e0?'더':'덜'} 살았습니다 · 같은 해 태어난 ${sexKid(p.sex)} 중 수명 ${topTxt(sv)}. 아래 「숫자의 맥락」에서 자세히.</p>
       ${p.deathAt>=15?`<div class="facts2">
         <div><span>가장 행복했던 해</span>${happyAge}세 (${E.y+happyAge}년)${happyWhy?` · ${happyWhy}`:''}</div>
         ${p.bestPayAge!=null?`<div><span>가장 많이 번 해</span>${p.bestPayAge}세 · 월 ${money(p.bestPay)}</div>`:''}
@@ -2847,6 +3071,7 @@ function endGame2(){
       </div>`:''}
       <dl class="summary">${sumRows.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('')}</dl>
     </div>
+    ${ctxBox(p)}
     <div class="rare">
       <span class="label">5,100만 명에서 당신 한 명까지</span>
       <div class="funnel" id="funnel">

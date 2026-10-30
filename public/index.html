@@ -1403,6 +1403,8 @@ class Person{
         this.log('담배를 피우기 시작했습니다.','bad',E.y===2026?'건강검진 수검자 흡연율 남 31.1%·여 3.8% (2024)':`그 시절 성인 남성 흡연율 약 ${Math.round(E.smoke.M*100)}%`,E.y===2026?'smoke24':'game');}
     });
     this.at(E.choiceAge,()=>{if(!this.everMarried)this.marriageChoice();});
+    // 혼자인 동안 적령기엔 2년, 서른다섯 넘어선 3년마다 다시 묻기 (37·44세의 '마흔' 선택과 겹치지 않게, 48세까지)
+    for(let a=E.choiceAge+2;a<=48;a+=a<35?2:3)if(Math.abs(a-37)>1&&Math.abs(a-44)>1)this.at(a,()=>this.singleCheck());
     this.at(40,()=>this.healthChoice());
     if(this.cancer)this.at(this.dxAge,()=>this.cancerDx());
     const fd=sampleDeath('M',this.dadAge)+E.shift.M,md=sampleDeath('F',this.momAge)+E.shift.F;
@@ -1590,7 +1592,7 @@ class Person{
       this.st('hap',-12);this.outliers.push(`${a}세의 큰 시련`);this.log(t,'bad',st,'game');this.snap('통계 밖의 시련',t);}
   }
   lateTry(p,first,intl){if(R()<clamp(p,.05,.85)){const wait=ri(0,1)+1;this.at(this.age+wait,()=>{if(this.married||!this.alive||this.cand)return;if(intl)this.route='intl';this.propose(first);});}
-    else this.at(this.age+2,()=>{if(!this.married&&this.alive)this.log('몇 번의 만남이 있었지만 인연으로 이어지지는 않았습니다.','');});}
+    else this.at(this.age+2,()=>{if(!this.married&&this.alive){const L=['몇 번의 만남이 있었지만 인연으로 이어지지는 않았습니다.','좋은 사람이다 싶었는데 몇 달 만에 연락이 끊겼습니다.','소개받은 사람과 두어 번 만났지만 마음이 움직이지 않았습니다.','만날 때마다 조건부터 따지게 되어 지쳤습니다.'];const i=(this.used.lateFail=(this.used.lateFail||0)+1)-1;this.log(L[i%L.length],'');}});}
   politics(){
     const a=this.age,y=this.year();if(this.region==='해외'||!this.alive||a<30||a>75||y<1952||this.housing==='shelter')return;
     const P=this.pol||(this.pol={lv:0,terms:0});
@@ -1747,6 +1749,24 @@ class Person{
     O('open','인연이 오면','굳이 서두르지 않는다',.3);
     O('single','혼자가 편하다','비혼도 괜찮다',this.old?.05:.15);
     this.choose(`${this.age}세, 결혼에 대해`,ab?`${this.district}에서 지낸 지 몇 년. 어떻게 사람을 만날까요?`:this.old?'집안 어른들이 슬슬 선 자리를 알아봅니다.':'친구들의 청첩장이 하나둘 도착합니다. 어떻게 사람을 만날까요?',os);
+  }
+  singleCheck(){
+    if(!this.alive||this.married||this.cand||this.army||this.widowed&&!this.divorced)return;
+    if(this.route==='single'){this.used.singleAsk=(this.used.singleAsk||0)+1;if(this.used.singleAsk%2)return;}
+    const M=this.sex==='M',y=this.year(),a=this.age,first=!this.everMarried,ab=this.region==='해외';
+    const par=!this.momDead&&!this.dadDead?'부모님':!this.momDead?'어머니':!this.dadDead?'아버지':'';
+    const pA=clamp(.2-Math.max(0,a-30)*.013+clamp((this.rel-60)*.003,-.05,.05)+(M?(this.inc-3)*.025:0),.04,.28)*(first?1:.7);
+    const desc=a<=33?(this.old||y<1985?'집안 어른들이 선 자리를 또 알아 왔습니다.':'친구들 결혼식에 다니느라 주말이 바쁩니다.')
+      :a<=39?(par&&!ab?`${par}께서 명절마다 결혼 이야기를 꺼냅니다.`:'친구들은 대부분 결혼해 아이를 키웁니다.')
+      :'소개 이야기도 점점 뜸해졌습니다. 그래도 아직 늦지 않았다는 사람도 있습니다.';
+    const os=[];
+    const act=ab?'현지 모임과 한인 모임에 부지런히 나간다':this.old||y<1985?'선을 본다':y>=2012&&a<40?'소개팅·앱으로 적극적으로 만난다':'주변에 소개를 적극적으로 부탁한다';
+    os.push({label:act,sub:'주말마다 약속이 생깁니다',eff:'결혼↑',w:.35,fn:()=>{this.route=ab?'ab_kor':this.old||y<1985?'jungmae':'sogae';const n=this.used.sAct=(this.used.sAct||0)+1;this.log(this.old||y<1985?(n>1?'집안 어른들 성화에 또 선 자리에 나갔습니다.':'다시 선을 보기 시작했습니다.'):n>1?'다시 마음을 먹고 사람을 만나 보기로 했습니다.':'적극적으로 사람을 만나 보기로 했습니다.','choice-ev');this.lateTry(pA,first);}});
+    if(!ab&&y>=1992&&a>=30)os.push({label:'결혼정보회사에 가입한다',sub:`가입비 약 ${money(Math.round(300*houseIdx(y)/10)*10)} · ${M?'소득이 높을수록':'나이가 어릴수록'} 유리`,eff:'결혼↑ 자산↓',w:.12,fn:()=>{this.route='agency';this.used.agencyOnce=1;if(this.afterDone||this.married)this.spendMoney('결혼정보회사 가입비',300*houseIdx(y));this.log('결혼정보회사에 가입했습니다.','choice-ev');this.lateTry(pA+(M?(this.inc-3)*.05:.08-Math.max(0,a-33)*.02),first);}});
+    os.push({label:'인연이 오면',sub:'굳이 서두르지 않는다',w:.3,fn:()=>{this.route='open';this.log((this.used.sOpen=(this.used.sOpen||0)+1)>1?'이번에도 서두르지 않기로 했습니다.':'인연이 오기를 기다리기로 했습니다.','choice-ev');this.lateTry(pA*.4,first);}});
+    os.push({label:'지금은 내 삶이 먼저',sub:'일과 취미에 집중',eff:'행복↑',w:.15,fn:()=>{this.st('hap',1);this.log('당분간은 일과 내 생활에 집중하기로 했습니다.','choice-ev');}});
+    if(this.route!=='single')os.push({label:'혼자 살기로 한다',sub:'비혼도 하나의 삶 · 앞으로 덜 묻습니다',w:this.old?.04:.1,fn:()=>{this.route='single';this.log('혼자의 삶도 괜찮다고 생각합니다.','choice-ev');}});
+    this.choose(`${a}세, ${first?'아직 혼자입니다':'다시 혼자입니다'}`,`${desc} 어떻게 할까요?`,os);
   }
   marryPlan(w){
     const M=this.sex==='M',E=this.E;

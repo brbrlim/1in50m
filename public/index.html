@@ -1942,7 +1942,8 @@ class Person{
     this.choose(`${this.given}, ${a}세`,`같은 해 태어난 ${sexKid(this.sex)} 중 ${Math.round(sv*100)}%가 ${a}세를 맞습니다. ${E.y!==2026?`2026년생이라면 ${Math.round(now*100)}%`:`1960년생은 ${Math.round(now*100)}%였습니다`}.`,
       [{label:'계속 살기',sub:'적은 생각은 생애 기록에 남아요',w:1,fn:()=>{}}],{pause:true,question:q});
   }
-  snap(title,desc){if(this.isPlayer&&this.alive&&!this.army&&this.lastChoiceAge!==this.age)this.queue.push({snapshot:true,title,desc,opts:[{label:'계속 살기',sub:'',w:1,fn:()=>{}}]});}
+  // 결혼·첫 일자리·내 집 마련처럼 선택 직후에 오는 순간도 멈춰서 보여 줌 (한 해에 한 번만)
+  snap(title,desc){if(this.isPlayer&&this.alive&&!this.army&&!this.queue.some(q=>q.snapshot))this.queue.push({snapshot:true,title,desc,opts:[{label:'계속 살기',sub:'',w:1,fn:()=>{}}]});}
   crossroads(){
     const j=this.job;const yy=this.year();
     const os=[{label:'지금 자리를 지킨다',sub:'익숙함과 안정',eff:'안정',w:.6,fn:()=>{this.tally.safe++;this.st('hap',-2);this.log('지금 자리를 지키기로 했습니다.','choice-ev');}},

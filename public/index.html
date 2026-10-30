@@ -1429,7 +1429,16 @@ class Person{
     this.at(90,()=>crowd(90,'구순을 맞았습니다.','mile'));
     this.at(100,()=>crowd(100,'백 번째 생일을 맞았습니다.','mile good'));
   }
-  score(bonus=0){const se=this.sex==='M'?this.E.sexEdu/2:-this.E.sexEdu/2;const tb=(this.talent==='수학'||this.talent==='글쓰기'?.15:0)+(this.kn-68)*.032;return(tb+this.lat*.8+INC_EFF[this.q-1]+STUDY_EFF[this.study]+this.hsEff+se+bonus-.12)/.95;}
+  score(bonus=0){const se=this.sex==='M'?this.E.sexEdu/2:-this.E.sexEdu/2;const tb=(this.talent==='수학'||this.talent==='글쓰기'?.15:0)+(this.kn-this.knMid())*.075;return(tb+this.lat*.3+INC_EFF[this.q-1]+STUDY_EFF[this.study]+this.hsEff+se+bonus-.12)/.95;}
+  // 같은 나이 평균 지식(15세 약 61, 18세 약 65): 지식이 또래보다 높을수록 성적이 오름
+  knMid(){return 61.5+1.3*clamp(this.age-15,0,6);}
+  // 성적을 가른 요인을 화면에 보여 줌 (지식·집안 형편·공부 방식·고등학교)
+  eduWhy(){const kd=Math.round(this.kn-this.knMid()),f=[];
+    f.push(`지식 ${Math.round(this.kn)}(또래 평균 ${Math.round(this.knMid())}${kd>=3?' ↑':kd<=-3?' ↓':''})`);
+    if(this.q!==3)f.push(`집안 형편 ${QLAB[this.q]}${this.q>3?' ↑':' ↓'}`);
+    if(this.study!=='balance')f.push(this.study==='exam'?'입시 올인 ↑':'좋아하는 것에 몰두 ↓');
+    if(this.hsEff)f.push(`${this.hsType} ${this.hsEff>0?'↑':'↓'}`);
+    return '성적을 가른 것: '+f.join(', ');}
   tierOf(z){for(const[k,t]of this.E.thr)if(z>t)return k;return this.E.thr[this.E.thr.length-1][0];}
   distFx(title,z,t){if(this.isPlayer)this.fx.push({type:'dist',title,segs:this.E.edu,pos:clamp(1-Phi(z),.003,.997),hit:t});}
   csatYear(){
@@ -1438,7 +1447,7 @@ class Person{
     const rank=['med','top','seoul','univ','college','none'].indexOf(t);
     this.distFx(`${ex} 결과, 동갑내기 중 내 자리는?`,z,t);
     this.log(t==='none'?`${ex} 성적으로는 대학 문턱을 넘기 어려웠습니다.`:`${J(ex,'을','를')} 치렀습니다. ${EDU_LAB[t]}에 갈 수 있는 성적입니다.`,
-      rank<=1?'good':'',`동갑내기 중 ${topTxt(1-Phi(z))}${this.E.uni?' · '+this.E.uni.t:''}`,['game',this.E.uni&&this.E.uni.s]);
+      rank<=1?'good':'',`동갑내기 중 ${topTxt(1-Phi(z))} · ${this.eduWhy()}${this.E.uni?' · '+this.E.uni.t:''}`,['game',this.E.uni&&this.E.uni.s]);
     if(rank>=3&&!(this.study==='passion'&&this.skill)){
       this.choose(`${ex} 결과가 나왔습니다`,`${EDU_LAB[t]}에 갈 수 있습니다. 1년 더 해볼까요?`,[
         {label:'재수한다',sub:'1년 늦어지지만 한 번 더 · 학원비와 마음고생',eff:'성적↑? 행복↓',w:this.study==='exam'?.35:.12*this.q/3,fn:()=>this.retake(1,z,t)},

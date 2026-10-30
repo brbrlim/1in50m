@@ -131,7 +131,6 @@ body.deciding .fbbtn{opacity:.55}
 .reel.rare.landed{box-shadow:0 0 0 2px color-mix(in srgb,#d9a73a 70%,transparent),0 0 18px color-mix(in srgb,#d9a73a 40%,transparent)}
 details.sources summary{cursor:pointer;list-style:none}details.sources summary::-webkit-details-marker{display:none}
 .stage{grid-column:1/-1;width:100%;max-width:100%;height:auto;aspect-ratio:120/34;image-rendering:pixelated;border-radius:6px;display:block}
-.photo.pix{image-rendering:pixelated;width:min(100%,400px);height:auto}
 .deathov{position:fixed;inset:0;background:#05060a;z-index:70;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;color:#e9ecf5;padding:24px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px));transition:opacity .4s}
 .deathov.out{opacity:0}.deathov .dbox{max-width:440px;width:100%;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;opacity:0}
 .deathov .dbox.in{animation:dIn .7s ease forwards}@keyframes dIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
@@ -3078,7 +3077,7 @@ async function playFx(){
       const[file,cap,by,lic]=f.ph;const img=new Image();img.alt=cap;img.className='photo';img.referrerPolicy='no-referrer';
       const ok=await new Promise(res=>{const to=setTimeout(()=>res(false),2500);img.onload=()=>{clearTimeout(to);res(true);};img.onerror=()=>{clearTimeout(to);res(false);};img.src=photoUrl(file);});
       if(!ok){box.innerHTML='';continue;}
-      el.classList.add('photo-fx');{const w=168,h=Math.round(img.naturalHeight/img.naturalWidth*w);const pc=document.createElement('canvas');pc.width=w;pc.height=h;pc.className='photo pix';const g=pc.getContext('2d');g.imageSmoothingEnabled=true;g.drawImage(img,0,0,w,h);el.appendChild(pc);}
+      el.classList.add('photo-fx');el.appendChild(img);
       const c=document.createElement('p');c.className='fx-r pop';c.textContent=f.caption;el.appendChild(c);
       const cr=document.createElement('p');cr.className='credit';cr.innerHTML=`${cap} · 사진 ${by} · ${lic} · <a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(file)}" target="_blank" rel="noopener">위키미디어 공용</a>`;el.appendChild(cr);
       await sleep(RM.matches?1500:2600/sp);el.classList.add('out');await sleep(RM.matches?0:300);box.innerHTML='';continue;

@@ -1872,7 +1872,11 @@ class Person{
          this.at(kb+19,()=>{const o=this.kidWork?(this.kidWork=false,'바로 일을 시작했습니다.'):wpick([['대학에 합격했습니다.',7],['재수를 시작했습니다.',2],['바로 일을 시작했습니다.',1]]);this.log(`${J(g,'이','가')} ${o}`,o.includes('합격')?'good':'');});
          this.at(kb+ri(23,30),()=>this.log(`${J(g,'이','가')} 독립해 집을 떠났습니다.`));
          if(R()<.62){this.at(kb+ri(27,37),()=>{this.scene('party',`${g} 결혼식`);
-           const c=Math.max(0,this.cash);this.choose(`${J(g,'이','가')} 결혼합니다`,`결혼식과 신혼집에 돈이 듭니다. 지금 모아 둔 돈은 ${money(c)}입니다.`,[
+           const c=Math.max(0,this.cash);
+           // 모아 둔 돈이 거의 없거나 빚이 더 많으면 보탤 수 없음: 선택지 없이 알려 주고 지나감
+           if(this.cash-this.debt<500){this.log(`${J(g,'이','가')} 결혼했습니다.`,'good');this.st('hap',-3);
+             this.log(this.cash<50?`모아 둔 돈이 없어 ${g}의 결혼 자금을 한 푼도 보태지 못했습니다. 결혼식 내내 미안한 마음이 들었습니다.`:`${this.debt>this.cash?'갚을 빚이 더 많아':'형편이 빠듯해'} ${g}의 결혼 자금을 보태지 못했습니다. ${J(g,'은','는')} 스스로 마련한 돈으로 식을 올렸습니다.`,'bad',`모아 둔 돈 ${money(c)}${this.debt>0?' · 빚 '+money(this.debt):''}`,'game');}
+           else this.choose(`${J(g,'이','가')} 결혼합니다`,`결혼식과 신혼집에 돈이 듭니다. 지금 모아 둔 돈은 ${money(c)}입니다.`,[
              {label:'넉넉히 보탠다',sub:`약 ${money(Math.min(c*.3,12000))}`,eff:'관계↑ 자산↓',w:this.inc>=4?.5:.2,fn:()=>{this.log(`${J(g,'이','가')} 결혼했습니다.`,'good');this.spendMoney('자녀 결혼 지원',Math.min(c*.3,12000));this.st('rel',5);this.log(`${g}의 결혼 자금을 넉넉히 보탰습니다.`,'choice-ev');}},
              {label:'형편껏 조금 보탠다',sub:`약 ${money(Math.min(c*.08,3000))}`,eff:'관계↑',w:.5,fn:()=>{this.log(`${J(g,'이','가')} 결혼했습니다.`,'good');this.spendMoney('자녀 결혼 지원',Math.min(c*.08,3000));this.st('rel',2);this.log('형편껏 조금 보탰습니다.','choice-ev');}},
              {label:'마음으로만 축하한다',sub:'돈은 아끼지만 서운해할 수 있음',eff:'관계↓',w:.25,fn:()=>{this.log(`${J(g,'이','가')} 결혼했습니다.`,'good');this.st('rel',-3);this.log('마음으로 축하했습니다.','choice-ev');}}]);
